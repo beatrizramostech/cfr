@@ -23,9 +23,7 @@ h2 {
 }
 
 .filtros-mobile {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
+  display: none;
 }
 
 .filtros-mobile button {
@@ -52,5 +50,10 @@ h2 {
 @media (max-width: 768px) {
   .minhas-viagens-container {
     margin: 24px 32px;
+  }
+  .filtros-mobile {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
   }
 }

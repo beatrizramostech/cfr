@@ -6,6 +6,7 @@ import MinhasViagens from '../pages/MinhasViagens';
 import MinhasSolicitacoes from '../pages/MinhasSolicitacoes';
 import SolicitacaoDetalhe from '../pages/SolicitacaoDetalhe';
 import ProtectedRoute from './ProtectedRoute';
+import ViagemDetalhe from '../pages/ViagemDetalhe';
 
 const { VITE_NAME_APP } = import.meta.env;
 
@@ -42,6 +43,14 @@ const routes = createBrowserRouter([
     ),
   },
   {
+  path: `/${VITE_NAME_APP}/detalhes-viagem/:id`,
+  element: (
+    <ProtectedRoute>
+      <ViagemDetalhe />
+    </ProtectedRoute>
+  ),
+},
+  {
     path: `/${VITE_NAME_APP}/solicitacao-detalhe/:id`,
     element: (
       <ProtectedRoute>
@@ -52,7 +61,7 @@ const routes = createBrowserRouter([
 
   // Fallback 404
   {
-    path: '*',
+    path: `/${VITE_NAME_APP}/*`,
     element: <NotFound />,
   },
 ]);

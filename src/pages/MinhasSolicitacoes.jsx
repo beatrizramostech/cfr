@@ -22,6 +22,10 @@ const MinhasSolicitacoes = () => {
     fetchSolicitacoes();
   }, []);
 
+  const solicitacaoComPendencia = solicitacoes.find(
+    (s) => s.status.toLowerCase() === 'em pendência',
+  );
+
   console.log(solicitacoes);
   return (
     <>
@@ -30,9 +34,24 @@ const MinhasSolicitacoes = () => {
         <div className='minhas-viagens-container'>
           <h2>Minhas Solicitações</h2>
 
+          {solicitacaoComPendencia && (
+            <>
+              <p className='aviso'>
+                Atenção! Você tem solicitações com pendência. Certifique-se de
+                respondê-las para prosseguimento da análise.
+              </p>
+              <ViagemCard viagem={solicitacaoComPendencia} isDestaque />
+            </>
+          )}
+
           <div className='lista-viagens'>
             {solicitacoes.map((v) => (
-              <ViagemCard categoria={'solicitacao'} key={v.id} viagem={v} />
+              <ViagemCard
+                categoria={'solicitacao'}
+                key={v.id}
+                viagem={v}
+                isDestaque={v.status === 'EM PENDÊNCIA'}
+              />
             ))}
           </div>
         </div>

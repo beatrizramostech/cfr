@@ -25,7 +25,7 @@
 
 @media (max-width: 768px) {
   .page {
-    margin: 24px 32px;
+    margin: 24px 12px;
   }
   .trip-info {
     flex-direction: column;

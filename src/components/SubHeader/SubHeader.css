@@ -1,0 +1,36 @@
+.subheader {
+  background-color: var(--cinza-1);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 108px;
+  border-bottom: 1px solid #ccc;
+}
+
+.subheader__back {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--cinza-3);
+  transition: color 0.2s ease;
+}
+
+.subheader__back:hover {
+  color: #000;
+}
+
+.subheader__username {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--cinza-3);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .subheader {
+    height: auto;
+    padding: 10px;
+  }
+}

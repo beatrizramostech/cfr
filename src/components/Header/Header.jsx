@@ -1,29 +1,26 @@
-import React from 'react';
 import logoDetran from '../../assets/logoDetran.png';
-import './Header.css';
 import estadoSSP from '../../assets/estadoSSP.png';
+import './Header.css';
 
 const Header = () => {
   return (
-    <>
-      <header className='header-container'>
-        <div className='banner'>
-          <div className='divLogoDetran'>
-            <img className='logoDetran' src={logoDetran} alt='Logo Detran' />
-          </div>
-          <div className='divTituloPortal'>
-            <span className='tituloPortal'>CONTROLE DE FROTAS</span>
-          </div>
-          <div className='divLogoGoverno'>
-            <img
-              className='logoGoverno'
-              src={estadoSSP}
-              alt='Brasão Governo do Estado Espírito Santo'
-            />
-          </div>
-        </div>
-      </header>
-    </>
+    <header className="header">
+      <div className="header__content">
+        <img
+          src={logoDetran}
+          alt="Logo Detran"
+          className="header__logo-detran"
+        />
+
+        <h1 className="header__title">CONTROLE DE FROTAS</h1>
+
+        <img
+          src={estadoSSP}
+          alt="Logo Governo"
+          className="header__logo-governo"
+        />
+      </div>
+    </header>
   );
 };
 

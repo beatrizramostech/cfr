@@ -73,8 +73,13 @@ const MinhasViagens = () => {
           </div>
 
           <div className='lista-viagens'>
-            {viagensFiltradas.map((v) => (
-              <ViagemCard categoria={'viagem'} key={v.id} viagem={v} />
+            {viagensFiltradas.map((viagem) => (
+              <ViagemCard
+                key={viagem.id}
+                viagem={viagem}
+                isDestaque={viagem.status === 'INICIADA'}
+                categoria='viagem'
+              />
             ))}
           </div>
         </div>

@@ -1,35 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { path } from '../utils/pathBuilder';
 
 const LoginPage = () => {
-  const { loginAC, isAuthenticated, login } = useAuth();
-  const [cpf, setCpf] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const { loginAC, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const { VITE_NAME_APP } = import.meta.env;
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(`/${VITE_NAME_APP}/home`);
+      navigate(path.home);
     }
-    console.log(isAuthenticated);
   }, [isAuthenticated]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    const success = await login(cpf);
-    setLoading(false);
-
-    if (success) {
-      navigate('/home'); // ou outro path que quiser
-    } else {
-      setError('CPF inválido ou erro na autenticação');
-    }
-  };
 
   return (
     <div className='box-container'>
@@ -41,19 +23,6 @@ const LoginPage = () => {
         <button className='button' onClick={loginAC}>
           Fazer login
         </button>
-        ou entre com seu cpf:
-        <form onSubmit={handleSubmit}>
-          <input
-            type='text'
-            placeholder='Digite seu CPF'
-            value={cpf}
-            onChange={(e) => setCpf(e.target.value)}
-          />
-          <button type='submit' disabled={loading}>
-            {loading ? 'Entrando...' : 'Entrar'}
-          </button>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-        </form>
       </div>
     </div>
   );
