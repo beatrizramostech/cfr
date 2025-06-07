@@ -1,0 +1,56 @@
+.minhas-viagens-container {
+  margin: 24px 108px;
+  padding: 20px 30px;
+  border-radius: 16px;
+  background-color: white;
+  height: 100%;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: #222;
+}
+
+.aviso {
+  border: 1px solid #f5c400;
+  background-color: #fff9e5;
+  padding: 12px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #7a5800;
+}
+
+.filtros-mobile {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.filtros-mobile button {
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.filtros-mobile button.ativo {
+  background-color: #004da1;
+  color: white;
+  border-color: #004da1;
+}
+
+.lista-viagens {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .minhas-viagens-container {
+    margin: 24px 32px;
+  }
+}

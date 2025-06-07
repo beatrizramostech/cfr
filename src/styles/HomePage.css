@@ -1,0 +1,41 @@
+.greeting-container {
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+}
+.trip-info {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+/*--------------------*/
+
+.page {
+  margin: 24px 108px;
+  padding: 20px 30px;
+  border-radius: 16px;
+  background-color: white;
+}
+
+.content {
+  margin-top: 32px;
+}
+
+@media (max-width: 768px) {
+  .page {
+    margin: 24px 32px;
+  }
+  .trip-info {
+    flex-direction: column;
+  }
+  .card-body {
+    display: none;
+  }
+
+  .card {
+    font-size: 1rem;
+    text-align: center;
+  }
+}
