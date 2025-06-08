@@ -4,10 +4,13 @@ import '../styles/MinhasViagens.css';
 import Container from '../components/Container/Container';
 import Header from '../components/Header/Header';
 import { apiService } from '../services/api';
+import SubHeader from '../components/SubHeader/SubHeader';
+import { useAuth } from '../contexts/AuthContext';
 
 const MinhasViagens = () => {
   const [viagens, setViagens] = useState([]);
   const [filtro, setFiltro] = useState('Todas');
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchViagens = async () => {
@@ -37,6 +40,7 @@ const MinhasViagens = () => {
   return (
     <>
       <Header />
+      <SubHeader onBack={() => window.history.back()} userName={user.nome} />
       <Container>
         <div className='minhas-viagens-container'>
           <h2>Minhas Viagens</h2>

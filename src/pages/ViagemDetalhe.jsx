@@ -5,12 +5,14 @@ import SubHeader from '../components/SubHeader/SubHeader';
 import Container from '../components/Container/Container';
 import { apiService } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import ModalChecklist from '../components/ModalChecklist/ModalChecklist';
 import '../styles/ViagemDetalhe.css';
 
 const ViagemDetalhe = () => {
   const { id } = useParams();
   const { user } = useAuth();
   const [viagem, setViagem] = useState(null);
+  const [showChecklistModal, setShowChecklistModal] = useState(false);
 
   useEffect(() => {
     const fetchViagem = async () => {
@@ -26,8 +28,40 @@ const ViagemDetalhe = () => {
 
   if (!viagem) return <p>Carregando...</p>;
 
-  const isMotorista = true;
-  // user.motorista === true || user.cnh === viagem.motorista?.cnh;
+  const isMotorista =
+    user.motorista === true || user.cnh === viagem.motorista?.cnh;
+
+  const handleMarcarChegada = async (pontoId) => {
+    try {
+      await apiService.marcarChegada(pontoId);
+    } catch (error) {
+      console.error('Erro ao marcar chegada:', error);
+    }
+  };
+
+  const handleCancelarRota = async (pontoId) => {
+    try {
+      await apiService.cancelarRota(pontoId);
+    } catch (error) {
+      console.error('Erro ao cancelar rota:', error);
+    }
+  };
+
+  const handleIniciarViagem = async () => {
+    try {
+      await apiService.iniciarViagem(viagem.id);
+    } catch (error) {
+      console.error('Erro ao iniciar viagem:', error);
+    }
+  };
+
+  const handleCancelarViagem = async () => {
+    try {
+      await apiService.cancelarViagem(viagem.id);
+    } catch (error) {
+      console.error('Erro ao cancelar viagem:', error);
+    }
+  };
 
   return (
     <>
@@ -36,6 +70,13 @@ const ViagemDetalhe = () => {
         userName={user.nome || user.cpf}
         onBack={() => window.history.back()}
       />
+      {showChecklistModal && (
+        <ModalChecklist
+          viagem={viagem}
+          user={user}
+          onClose={() => setShowChecklistModal(false)}
+        />
+      )}
       <Container>
         <div className='page'>
           <div className='detalhes-container'>
@@ -86,7 +127,7 @@ const ViagemDetalhe = () => {
 
             <div className='rota-box'>
               <h3>Rota</h3>
-              {viagem.pontosRota?.map((ponto, idx) => (
+              {viagem.pontosRota?.map((ponto) => (
                 <div key={ponto.id} className='ponto-rota'>
                   <div className='ponto-rota-info'>
                     <p>
@@ -98,8 +139,18 @@ const ViagemDetalhe = () => {
                   </div>
                   {isMotorista && (
                     <div className='ponto-rota-actions'>
-                      <button className='secundario'>Marcar chegada</button>
-                      <button className='perigo'>Cancelar Rota</button>
+                      <button
+                        className='secundario'
+                        onClick={() => handleMarcarChegada(ponto.id)}
+                      >
+                        Marcar chegada
+                      </button>
+                      <button
+                        className='perigo'
+                        onClick={() => handleCancelarRota(ponto.id)}
+                      >
+                        Cancelar Rota
+                      </button>
                     </div>
                   )}
                 </div>
@@ -107,11 +158,20 @@ const ViagemDetalhe = () => {
             </div>
 
             <div className='botoes-viagem'>
-              <button className='perigo'>Cancelar Viagem</button>
+              <button className='perigo' onClick={handleCancelarViagem}>
+                Cancelar Viagem
+              </button>
               {isMotorista && (
                 <>
-                  <button className='secundario'>Inserir Checklist</button>
-                  <button className='primario'>Iniciar Viagem</button>
+                  <button
+                    className='secundario'
+                    onClick={() => setShowChecklistModal(true)}
+                  >
+                    Inserir Checklist
+                  </button>
+                  <button className='primario' onClick={handleIniciarViagem}>
+                    Iniciar Viagem
+                  </button>
                 </>
               )}
             </div>

@@ -12,6 +12,8 @@
   padding: 1rem;
   border-radius: 6px;
   border: 1px solid #ddd;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .rota-box {
@@ -19,6 +21,7 @@
   padding: 1rem;
   border-radius: 6px;
   border: 1px solid #ddd;
+  margin-bottom: 1rem;
 }
 
 .ponto-rota {

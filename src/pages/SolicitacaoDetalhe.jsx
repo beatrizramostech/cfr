@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
+import SubHeader from '../components/SubHeader/SubHeader';
 import { apiService } from '../services/api';
 import Header from '../components/Header/Header';
 import ModalPendencia from '../components/ModalPendencia/ModalPendencia';
+import { useAuth } from '../contexts/AuthContext';
+import '../styles/SolicitacaoDetalhe.css';
+import Container from '../components/Container/Container';
 
 const SolicitacaoDetalhe = () => {
   const { id } = useParams();
+  const { user } = useAuth();
   const [solicitacao, setSolicitacao] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -46,84 +50,83 @@ const SolicitacaoDetalhe = () => {
   return (
     <>
       <Header />
-      <div className='detalhes-container'>
-        <div className='detalhes-header'>
-          <h2>Solicitação #{solicitacao.onBaseID}</h2>
-          <div className='usuario-logado'>João da Silva</div>
-        </div>
-
-        <div className='detalhes-card'>
-          <div className='grid-detalhes'>
+      <SubHeader
+        userName={user.nome || user.cpf}
+        onBack={() => window.history.back()}
+      />
+      <Container>
+        <div className='page'>
+          <div className='detalhes-container'>
+            <h2>Solicitação #{solicitacao.onBaseID}</h2>
+          </div>
+          <div className='detalhes-grid'>
             <div>
-              <label>Status</label>
-              <input disabled value={status} />
+              <strong>Status</strong>
+              <p>{status}</p>
             </div>
             <div>
-              <label>Horário de Saída</label>
-              <input disabled value={horaPartida} />
+              <strong>Horário de Saída</strong>
+              <p>{horaPartida}</p>
             </div>
             <div>
-              <label>Data de Saída</label>
-              <input disabled value={formatDate(dataPartida)} />
+              <strong>Data de Saída</strong>
+              <p>{formatDate(dataPartida)}</p>
             </div>
             <div>
-              <label>Horário de Chegada</label>
-              <input disabled value={horaChegada} />
+              <strong>Horário de Chegada</strong>
+              <p>{horaChegada}</p>
             </div>
             <div>
-              <label>Data de Chegada</label>
-              <input disabled value={formatDate(dataChegada)} />
+              <strong>Data de Chegada</strong>
+              <p>{formatDate(dataChegada)}</p>
             </div>
             <div>
-              <label>Motorista Solicitado?</label>
-              <input disabled value={motoristaSolicitado ? 'Sim' : 'Não'} />
+              <strong>Motorista Solicitado?</strong>
+              <p>{motoristaSolicitado ? 'Sim' : 'Não'}</p>
             </div>
             <div>
-              <label>Tipo de Veículo</label>
-              <input disabled value={tipoVeiculo.nome} />
+              <strong>Tipo de Veículo</strong>
+              <p>{tipoVeiculo.nome}</p>
             </div>
             <div>
-              <label>Tipo de Viagem</label>
-              <input disabled value={tipoViagem.nome} />
+              <strong>Tipo de Viagem</strong>
+              <p>{tipoViagem.nome}</p>
             </div>
             <div className='grid-full'>
-              <label>Motivo da Viagem</label>
-              <input disabled value={motivoViagem.nome} />
+              <strong>Motivo da Viagem</strong>
+              <p>{motivoViagem.nome}</p>
             </div>
           </div>
-
-          {pontosRota != [] && (
-            <div className='rota-container'>
-              <h4>Rota</h4>
-              <div className='rota-bloco'>
-                <label>Origem</label>
-                <p>{pontosRota}</p>
-              </div>
-              {pontosRota && (
-                <div className='rota-bloco'>
-                  <label>Intermediário</label>
-                  <p>{pontosRota}</p>
+          <div className='rota-box'>
+            <h4>Rota</h4>
+            {pontosRota != [] &&
+              pontosRota.map((ponto) => (
+                <div key={ponto.id} className='ponto-rota'>
+                  <div className='ponto-rota-info'>
+                    <p>
+                      <strong>{ponto.tipoPonto}</strong>
+                    </p>
+                    <p>
+                      {ponto.nomeLocal} - {ponto.municipio}/{ponto.uf}
+                    </p>
+                  </div>{' '}
                 </div>
-              )}
-              <div className='rota-bloco'>
-                <label>Destino</label>
-                <p>{pontosRota}</p>
-              </div>
-            </div>
+              ))}
+          </div>
+          {solicitacao.pendencia && (
+            <button className='primario' onClick={() => setModalOpen(true)}>
+              Responder Pendência
+            </button>
           )}
-
-          <button
-            className='botao-responder'
-            onClick={() => setModalOpen(true)}
-          >
-            Responder Pendência
-          </button>
         </div>
 
         {modalOpen && (
-          <ModalPendencia onClose={()=>setModalOpen(false)}/>
+          <ModalPendencia
+            solicitacao={solicitacao}
+            onClose={() => setModalOpen(false)}
+          />
         )}
-      </div>
+      </Container>
     </>
   );
 };

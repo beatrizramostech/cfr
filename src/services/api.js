@@ -55,4 +55,28 @@ export const apiService = {
     const res = await api.get(`/solicitacoes/${id}`);
     return res.data;
   },
+  marcarChegada: async (pontoId) => {
+    const res = await api.post(`/pontosRota/${pontoId}/conclusao`);
+    return res.data;
+  },
+  cancelarRota: async (pontoId) => {
+    const res = await api.post(`/pontosRota/${pontoId}/cancelamento`);
+    return res.data;
+  },
+  iniciarViagem: async (viagemId) => {
+    const res = await api.post(`/viagens/${viagemId}/inicio`);
+    return res.data;
+  },
+  cancelarViagem: async (viagemId) => {
+    const res = await api.post(`/viagens/${viagemId}/cancelamento`);
+    return res.data;
+  },
+  enviarChecklist: async (formData, viagemId) => {
+    const res = await api.post(`/viagens/${viagemId}/checklist`, formData);
+    return res;
+  },
+  enviarRespostaPendencia: async (formData, pendenciaId) => {
+    const res = await api.post(`/pendencias/${pendenciaId}`, formData);
+    return res;
+  },
 };

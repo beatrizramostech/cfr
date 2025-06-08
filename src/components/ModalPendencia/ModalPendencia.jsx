@@ -1,60 +1,114 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './ModalPendencia.css';
+import { apiService } from '../../services/api';
 
-const ModalPendencia = ({onClose}) => {
+const ModalPendencia = ({ solicitacao, onClose }) => {
+  const [fotos, setFotos] = useState([]);
+  const [resposta, setResposta] = useState('');
+
+  const formatDate = (isoDate) => {
+    const [year, month, day] = isoDate.split('T')[0].split('-');
+    return `${day}-${month}-${year}`;
+  };
+
+  const formatarHoraMinuto = (dataIso, usarUtc = false) => {
+    const data = new Date(dataIso);
+    const horas = usarUtc ? data.getUTCHours() : data.getHours();
+    const minutos = usarUtc ? data.getUTCMinutes() : data.getMinutes();
+    return `${horas.toString().padStart(2, '0')}:${minutos
+      .toString()
+      .padStart(2, '0')}`;
+  };
+  const handleUpload = (e) => {
+    setFotos([...fotos, ...Array.from(e.target.files)]);
+  };
+  const removerArquivo = (i) => {
+    const novos = [...fotos];
+    novos.splice(i, 1);
+    setFotos(novos);
+  };
+  const { pendencia } = solicitacao;
+
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    fotos.forEach((file) => formData.append('arquivos', file));
+    formData.append('respota', resposta);
+    try {
+      await apiService.enviarRespostaPendencia(formData, pendencia.id);
+      console.log('Checklist enviado com sucesso!');
+      onClose();
+    } catch (err) {
+      console.error(err);
+      console.log('Erro ao enviar checklist');
+    }
+  };
+
   return (
-    <div className='modal-overlay'>
-      <div className='modal-container'>
-        <h2>Pendência</h2>
+    <div className='modal-backdrop'>
+      <div className='modal'>
+        <div className='modal-header'>
+          <h2>Pendência</h2>
+          <button className='close-button' onClick={onClose}>
+            ✕
+          </button>
+        </div>
         <div className='row'>
           <div className='input-group'>
             <label>Data do Registro</label>
-            <input type='text' value='03/05/2025' readOnly />
+            <input
+              type='text'
+              value={formatDate(pendencia?.dataHoraRegistro)}
+              readOnly
+            />
           </div>
           <div className='input-group'>
             <label>Horário do Registro</label>
-            <input type='text' value='08:20' readOnly />
+            <input
+              type='text'
+              value={formatarHoraMinuto(pendencia?.dataHoraRegistro)}
+              readOnly
+            />
           </div>
         </div>
 
         <div className='input-group full'>
           <label>Motivo</label>
-          <textarea value='Favor anexar a CNH frente e verso' readOnly />
+          <textarea value={pendencia?.descricao} readOnly />
         </div>
 
         <div className='input-group full'>
           <label>Resposta</label>
-          <textarea placeholder='Digite sua resposta...' />
+          <textarea
+            value={resposta}
+            onChange={(e) => setResposta(e.target.value)}
+            placeholder='Digite sua resposta...'
+          />
         </div>
 
-        <div className='input-group full'>
-          <label>Documentos</label>
-          <div className='documentos-list'>
-            <div className='documento'>
-              <img src='/img-placeholder.png' alt='doc' />
-              <button className='delete-btn'>🗑️</button>
-            </div>
-            <div className='documento'>
-              <img src='/img-placeholder.png' alt='doc' />
-              <button className='delete-btn'>🗑️</button>
-            </div>
-            <div className='documento'>
-              <img src='/img-placeholder.png' alt='doc' />
-              <button className='delete-btn'>🗑️</button>
-            </div>
+        <div className='upload-section resposta-form'>
+          <input
+            type='file'
+            id='upload-arquivos'
+            multiple
+            onChange={handleUpload}
+            style={{ display: 'none' }}
+          />
+
+          <label htmlFor='upload-arquivos' className='upload-botao '>
+            Inserir Fotos
+          </label>
+
+          <div className='preview-list'>
+            {fotos.map((file, i) => (
+              <div key={i} className='file-preview'>
+                <span>{file.name}</span>
+                <button onClick={() => removerArquivo(i)}>🗑</button>
+              </div>
+            ))}
           </div>
         </div>
-
-        <div className='buttons'>
-          <label className='upload-btn'>
-            📎 Inserir Arquivos
-            <input type='file' multiple hidden />
-          </label>
-          <button className='responder-btn'>Responder</button>
-        </div>
-
-        <button className='close-btn' onClick={onClose}>
-          Fechar
+        <button className='primario resposta-form' onClick={handleSubmit}>
+          Responder
         </button>
       </div>
     </div>
