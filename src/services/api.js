@@ -79,4 +79,8 @@ export const apiService = {
     const res = await api.post(`/pendencias/${pendenciaId}`, formData);
     return res;
   },
+  criarSolicitacao: async (dados) => {
+    const res = await api.post('/solicitacoes', dados);
+    return res.data;
+  },
 };
