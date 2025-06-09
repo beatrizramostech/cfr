@@ -19,7 +19,13 @@ const NovaSolicitacao = () => {
     setStep(step + 1);
   };
 
-  const handleVoltar = () => setStep(step - 1);
+  const handleVoltar = () => {
+    if (step == 1) {
+      window.history.back();
+    } else {
+      setStep(step - 1);
+    }
+  };
 
   return (
     <>
@@ -33,7 +39,8 @@ const NovaSolicitacao = () => {
           <FormularioRota
             pontos={pontosRota}
             setPontos={setPontosRota}
-            onNext={() => setStep(3)}
+            setStep={setStep}
+            dadosSolicitacao={dadosSolicitacao}
             onBack={handleVoltar}
           />
         )}

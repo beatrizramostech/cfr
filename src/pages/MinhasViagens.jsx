@@ -18,7 +18,6 @@ const MinhasViagens = () => {
         const data = await apiService.getViagens();
         setViagens(data.dados);
       } catch (error) {
-        console.log('Erro ao buscar viagens', error);
       }
     };
 

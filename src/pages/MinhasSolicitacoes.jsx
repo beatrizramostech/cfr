@@ -18,7 +18,6 @@ const MinhasSolicitacoes = () => {
         const data = await apiService.getSolicitacoes();
         setSolicitacoes(data.dados);
       } catch (error) {
-        console.log('Erro ao buscar solicitações', error);
       }
     };
 
@@ -29,7 +28,6 @@ const MinhasSolicitacoes = () => {
     (s) => s.status.toLowerCase() === 'em pendência',
   );
 
-  console.log(solicitacoes);
   return (
     <>
       <Header />

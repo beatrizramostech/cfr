@@ -33,7 +33,6 @@ const SolicitacaoDetalhe = () => {
   };
 
   if (!solicitacao) return <p>Carregando...</p>;
-  console.log(solicitacao);
   const {
     status,
     horaPartida,

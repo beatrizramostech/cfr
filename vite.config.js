@@ -7,6 +7,7 @@ import viteBasicSslPlugin from '@vitejs/plugin-basic-ssl';
 export default defineConfig({
   server: {
     https: true,
+    historyApiFallback: true,
   },
   plugins: [react(), viteBasicSslPlugin()],
   base: '/cfr',

@@ -1,0 +1,35 @@
+export const tiposVeiculo = [
+  'CAMINHÃO',
+  'CAMINHONETE',
+  'CARRO',
+  'FURGÃO',
+  'MICROÔNIBUS',
+  'ÔNIBUS',
+  'PICKUP',
+  'VAN',
+];
+
+export const tiposViagem = [
+  'BATE VOLTA',
+  'DOBRADINHA',
+  'IDA',
+  'PERNOITE',
+  'VIAGEM PROLONGADA',
+];
+
+export const motivosViagem = [
+  'ABASTECIMENTO',
+  'BANCA EXAMINADORA',
+  'DIVERSOS',
+  'ENGENHARIA DE TRÂNSITO',
+  'ENTREGA E RECOLHIMENTO DE MATERIAL',
+  'EVENTO OFICIAL',
+  'FISCALIZAÇÃO',
+  'INVENTÁRIO PATRIMONIAL',
+  'MANUTENÇÃO',
+  'SERVIÇOS',
+  'SUPORTE DE TI',
+  'TRANSPORTE DE PESSOAL',
+  'VISITA TÉCNICA',
+  'VISTORIA DE CREDENCIADOS',
+];

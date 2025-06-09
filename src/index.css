@@ -21,3 +21,50 @@ body,
   font-family: 'Open Sans', sans-serif;
   background-color: rgb(207, 207, 207, 0.1);
 }
+
+.alert-container {
+  position: fixed;
+  top: 100px;
+  right: 32px;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: end;
+  gap: 12px;
+  max-width: 100%;
+  z-index: 9999;
+}
+.alert {
+  height: 35px;
+  padding: 10px;
+  font-size: 11pt;
+  min-width: 240px;
+  flex-wrap: wrap;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.close-alert {
+  padding-left: 20px;
+  font-family: 'Open Sans';
+  font-size: 20pt;
+  font-weight: 200;
+  border: none;
+  text-align: center;
+  background-color: transparent;
+  cursor: pointer;
+}
+.alert-error {
+  background-color: var(--marsala-2);
+}
+.alert-warning {
+  background-color: rgb(226, 221, 45);
+  color: var(--cinza-2);
+}
+
+.alert-success {
+  background-color: rgb(40, 160, 88);
+}
+.alert-info {
+  background-color: var(--azul-1);
+}

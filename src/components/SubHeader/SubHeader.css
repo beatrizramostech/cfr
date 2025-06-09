@@ -15,6 +15,10 @@
   cursor: pointer;
   color: var(--cinza-3);
   transition: color 0.2s ease;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  gap: 1rem;
 }
 
 .subheader__back:hover {
@@ -25,6 +29,11 @@
   font-size: 1rem;
   font-weight: 500;
   color: var(--cinza-3);
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
 }
 
 /* Responsivo */

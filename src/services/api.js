@@ -81,6 +81,10 @@ export const apiService = {
   },
   criarSolicitacao: async (dados) => {
     const res = await api.post('/solicitacoes', dados);
+    return res;
+  },
+  getUnidades: async () => {
+    const res = await api.get('/unidades');
     return res.data;
   },
 };

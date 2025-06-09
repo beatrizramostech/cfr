@@ -11,6 +11,9 @@
   gap: 16px;
   transition: 0.3s ease;
   position: relative;
+  justify-items: center;
+  align-items: center;
+  gap: 1rem;
 }
 
 .card:hover {
@@ -83,7 +86,7 @@
   }
 
   .card__list {
-    display: none; 
+    display: none;
   }
 
   .card__alert {

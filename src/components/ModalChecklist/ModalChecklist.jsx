@@ -51,11 +51,9 @@ const ModalChecklist = ({ viagem, user, onClose }) => {
 
     try {
       await apiService.enviarChecklist(formData, viagem.id);
-      console.log('Checklist enviado com sucesso!');
       onClose();
     } catch (err) {
       console.error(err);
-      console.log('Erro ao enviar checklist');
     }
   };
 

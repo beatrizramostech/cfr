@@ -85,7 +85,7 @@ const HomePage = () => {
           {proximaViagem && (
             <section>
               <div className='greeting-container'>
-                <h2>Olá, {user.cpf}!</h2>
+                <h2>Olá, {user.nome}!</h2>
               </div>
               <div className='trip-info'>
                 <div>

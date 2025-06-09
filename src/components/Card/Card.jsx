@@ -21,7 +21,7 @@ const Card = ({ title, children, type, status }) => {
     }
   };
 
-  const showAlert = status === 'pendente' || status === 'iniciada';
+  const showAlerta = status === 'pendente' || status === 'iniciada';
 
   const getIcon = () => {
     if (type === 'viagem') return <PiCarProfile size={40} />;
@@ -43,7 +43,7 @@ const Card = ({ title, children, type, status }) => {
         <h3 className='card__title'>{title}</h3>
         <ul className='card__list'>{children}</ul>
       </div>
-      {showAlert && (
+      {showAlerta && (
         <div className='card__alert'>
           <PiWarningCircleFill size={20} />
           <span>{getAlertText()}</span>

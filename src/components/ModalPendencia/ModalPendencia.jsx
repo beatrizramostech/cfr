@@ -35,11 +35,9 @@ const ModalPendencia = ({ solicitacao, onClose }) => {
     formData.append('respota', resposta);
     try {
       await apiService.enviarRespostaPendencia(formData, pendencia.id);
-      console.log('Checklist enviado com sucesso!');
       onClose();
     } catch (err) {
       console.error(err);
-      console.log('Erro ao enviar checklist');
     }
   };
 

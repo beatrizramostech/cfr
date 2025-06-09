@@ -1,297 +1,420 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { schemaFormulario } from './schemaFormularioInicial';
 import './FormularioInicial.css';
 import Container from '../Container/Container';
-
-const tiposVeiculo = [
-  'CAMINHÃO',
-  'CAMINHONETE',
-  'CARRO',
-  'FURGÃO',
-  'MICROÔNIBUS',
-  'ÔNIBUS',
-  'PICKUP',
-  'VAN',
-];
-
-const tiposViagem = [
-  'BATE VOLTA',
-  'DOBRADINHA',
-  'IDA',
-  'PERNOITE',
-  'VIAGEM PROLONGADA',
-];
-
-const motivosViagem = [
-  'ABASTECIMENTO',
-  'BANCA EXAMINADORA',
-  'DIVERSOS',
-  'ENGENHARIA DE TRÂNSITO',
-  'ENTREGA E RECOLHIMENTO DE MATERIAL',
-  'EVENTO OFICIAL',
-  'FISCALIZAÇÃO',
-  'INVENTÁRIO PATRIMONIAL',
-  'MANUTENÇÃO',
-  'SERVIÇOS',
-  'SUPORTE DE TI',
-  'TRANSPORTE DE PESSOAL',
-  'VISITA TÉCNICA',
-  'VISTORIA DE CREDENCIADOS',
-];
+import { FaQuestionCircle } from 'react-icons/fa';
+import { useAuth } from '../../contexts/AuthContext';
+import { motivosViagem, tiposVeiculo, tiposViagem } from './selectInfo';
+import { useAlert } from '../../contexts/AlertContext';
 
 const FormularioInicial = ({ dados, onNext }) => {
-  const [form, setForm] = useState({
-    tipoSolicitacao: 'proprio',
-    procurador: {
-      nome: '',
-      cpf: '',
-      email: '',
-      telefone: '',
+  const { user } = useAuth();
+  const { showAlert } = useAlert();
+
+  const form = useForm({
+    resolver: zodResolver(schemaFormulario),
+    defaultValues: {
+      tipoSolicitacao: 'proprio',
+      procurador: {
+        nome: '',
+        cpf: '',
+        email: '',
+        telefone: '',
+      },
+      interessado: {
+        nome: '',
+        cpf: '',
+        email: '',
+        telefone: '',
+        cnh: '',
+        cnhCategoria: '',
+        cnhOrgaoEmissor: '',
+        cnhuf: '',
+        cnhValidade: '',
+      },
+      tipoVeiculo: '',
+      motoristaSolicitado: 'Não',
+      tipoViagem: '',
+      motivoViagem: '',
+      dataPartida: '',
+      horaPartida: '',
+      dataChegada: '',
+      horaChegada: '',
+      observacao: '',
+      ...dados,
     },
-    interessado: {
-      nome: '',
-      cpf: '',
-      email: '',
-      telefone: '',
-      cnh: '',
-      cnhCategoria: '',
-      cnhOrgaoEmissor: '',
-      cnhuf: '',
-      cnhValidade: '',
-    },
-    tipoVeiculo: '',
-    motoristaSolicitado: 'Não',
-    tipoViagem: '',
-    motivoViagem: '',
-    dataPartida: '',
-    horaPartida: '',
-    dataChegada: '',
-    horaChegada: '',
-    observacao: '',
-    ...dados,
   });
 
-  const handleChange = (e, section = null) => {
-    const { name, value } = e.target;
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = form;
 
-    if (section) {
-      setForm((prev) => ({
-        ...prev,
-        [section]: {
-          ...prev[section],
-          [name]: value,
-        },
-      }));
-    } else {
-      setForm((prev) => ({ ...prev, [name]: value }));
+  const tipoSolicitacao = watch('tipoSolicitacao');
+
+  useEffect(() => {
+    if (!user?.nome || !user?.cpf || !user?.email) return;
+
+    if (tipoSolicitacao === 'proprio') {
+      form.setValue('interessado.nome', user.nome);
+      form.setValue('interessado.cpf', user.cpf);
+      form.setValue('interessado.email', user.email);
+      form.setValue('procurador.nome', '');
+      form.setValue('procurador.cpf', '');
+      form.setValue('procurador.email', '');
+    } else if (tipoSolicitacao === 'terceiro') {
+      form.setValue('interessado.nome', '');
+      form.setValue('interessado.cpf', '');
+      form.setValue('interessado.email', '');
+      form.setValue('procurador.nome', user.nome);
+      form.setValue('procurador.cpf', user.cpf);
+      form.setValue('procurador.email', user.email);
     }
+  }, [tipoSolicitacao, user, form]);
+
+  const onError = (errors) => {
+    const extractMessages = (errorObj) => {
+      const messages = [];
+
+      const traverse = (obj) => {
+        if (!obj || typeof obj !== 'object') return;
+
+        for (const key in obj) {
+          if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
+
+          const val = obj[key];
+
+          if (val && typeof val.message === 'string') {
+            messages.push(val.message);
+          } else if (typeof val === 'object') {
+            traverse(val); // Chamada recursiva segura
+          }
+        }
+      };
+
+      traverse(errorObj);
+      return messages;
+    };
+
+    const mensagens = extractMessages(errors);
+
+    mensagens.forEach((msg) =>
+      showAlert({
+        type: 'error',
+        message: msg,
+      }),
+    );
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onNext(form);
-  };
+  const onSubmit = (data) => {
+    let partida = new Date(`${data.dataPartida}T${data.horaPartida}:00`);
+    let chegada = new Date(`${data.dataChegada}T${data.horaChegada}:00`);
+    let validade = data.interessado.cnhValidade;
 
+    if (data.dataChegada < data.dataPartida) {
+      showAlert({
+        message: 'Data de chegada deve ser posterior à data de partida.',
+        type: 'error',
+      });
+      throw new Error('Data de chegada deve ser posterior à data de partida.');
+    }
+
+    if (data.tipoViagem === 'BATE VOLTA') {
+      chegada = partida;
+    }
+    if (data.tipoViagem === 'PERNOITE') {
+      const diffPernoite = (chegada - partida) / (1000 * 60 * 60 * 24);
+      if (diffPernoite < 1 || diffPernoite >= 2) {
+        showAlert({
+          message:
+            'Em Pernoite, a chegada deve ser exatamente no dia seguinte da partida.',
+          type: 'error',
+        });
+        throw new Error(
+          'Em Pernoite, a chegada deve ser exatamente no dia seguinte da partida.',
+        );
+      }
+    }
+    if (data.tipoViagem === 'VIAGEM PROLONGADA') {
+      const diffProlongada = (chegada - partida) / (1000 * 60 * 60 * 24);
+      if (diffProlongada < 2) {
+        showAlert({
+          message:
+            'Em Viagem Prolongada, a chegada deve ser pelo menos dois dias após a partida.',
+          type: 'error',
+        });
+        throw new Error(
+          'Em Viagem Prolongada, a chegada deve ser pelo menos dois dias após a partida.',
+        );
+      }
+    }
+    if (data.motoristaSolicitado == 'Não') {
+      if (data.interessado.cnh == '') {
+        showAlert({
+          message:
+            'Se o solicitante não possui CNH válida, deve solicitar motorista.',
+          type: 'error',
+        });
+        throw new Error(
+          'Se o solicitante não possui CNH válida, deve solicitar motorista.',
+        );
+      }
+      if (data.interessado.cnhValidade == '') {
+        showAlert({
+          message: 'Digite a data de validade da CNH.',
+          type: 'error',
+        });
+        throw new Error('Validade da CNH Invalida');
+      } else {
+        validade = new Date(`${data.interessado.cnhValidade}T00:00:00`);
+      }
+      if (data.interessado.cnhCategoria == '') {
+        showAlert({
+          message: 'Digite a categoria da CNH.',
+          type: 'error',
+        });
+        throw new Error('Categoria da CNH Invalida');
+      }
+      if (data.interessado.cnhOrgaoEmissor == '') {
+        showAlert({
+          message: 'Digite  Orgão Emissor da CNH.',
+          type: 'error',
+        });
+        throw new Error('Orgão Emissor da CNH Invalida');
+      }
+      if (data.interessado.cnhuF == '') {
+        showAlert({
+          message: 'Digite a UF da CNH.',
+          type: 'error',
+        });
+        throw new Error('UF da CNH Invalida');
+      }
+    }
+
+    const dadosFinal = {
+      ...data,
+      dataPartida: partida.toISOString(),
+      dataChegada: chegada.toISOString(),
+      cnhValidade: validade,
+    };
+
+    delete dadosFinal.tipoSolicitacao;
+    onNext(dadosFinal);
+    console.log(dadosFinal);
+  };
   return (
     <Container>
-      <div className='page'>
-        <form onSubmit={handleSubmit}>
+      <FormProvider {...form}>
+        <form
+          onSubmit={handleSubmit(onSubmit, onError)}
+          className='page form-inicial'
+        >
           <h3>Nova Solicitação</h3>
 
           <div className='radio-grupo'>
             <label>
               <input
                 type='radio'
-                name='tipoSolicitacao'
                 value='proprio'
-                checked={form.tipoSolicitacao === 'proprio'}
-                onChange={handleChange}
+                {...register('tipoSolicitacao')}
               />
               Solicitação para você
             </label>
             <label>
               <input
                 type='radio'
-                name='tipoSolicitacao'
                 value='terceiro'
-                checked={form.tipoSolicitacao === 'terceiro'}
-                onChange={handleChange}
+                {...register('tipoSolicitacao')}
               />
               Solicitação para terceiro
+              <div className='tooltip-container'>
+                <FaQuestionCircle className='information' />
+                <span className='tooltip-text'>
+                  Todo interessado precisa ser colaborador do DETRAN-ES
+                </span>
+              </div>
             </label>
           </div>
 
-          {form.tipoSolicitacao === 'terceiro' && (
+          {tipoSolicitacao === 'terceiro' && (
             <fieldset>
               <legend>Procurador</legend>
-              <input
-                placeholder='Procurador'
-                name='nome'
-                value={form.procurador.nome}
-                onChange={(e) => handleChange(e, 'procurador')}
-              />
-              <input
-                placeholder='CPF'
-                name='cpf'
-                value={form.procurador.cpf}
-                onChange={(e) => handleChange(e, 'procurador')}
-              />
-              <input
-                placeholder='E-mail'
-                name='email'
-                value={form.procurador.email}
-                onChange={(e) => handleChange(e, 'procurador')}
-              />
-              <input
-                placeholder='Telefone'
-                name='telefone'
-                value={form.procurador.telefone}
-                onChange={(e) => handleChange(e, 'procurador')}
-              />
+              <div className='row'>
+                <label className='input-group'>
+                  Nome
+                  <input
+                    {...register('procurador.nome')}
+                    readOnly={tipoSolicitacao === 'terceiro'}
+                  />
+                </label>
+                <label className='input-group'>
+                  CPF
+                  <input
+                    {...register('procurador.cpf')}
+                    readOnly={tipoSolicitacao === 'terceiro'}
+                  />
+                </label>
+              </div>
+              <div className='row'>
+                <label className='input-group'>
+                  Email
+                  <input
+                    {...register('procurador.email')}
+                    readOnly={tipoSolicitacao === 'terceiro'}
+                  />
+                </label>
+                <label className='input-group'>
+                  Telefone
+                  <input {...register('procurador.telefone')} />
+                </label>
+              </div>
             </fieldset>
           )}
 
           <fieldset>
             <legend>Interessado</legend>
-            <input
-              placeholder='Nome'
-              name='nome'
-              value={form.interessado.nome}
-              onChange={(e) => handleChange(e, 'interessado')}
-            />
-            <input
-              placeholder='CPF'
-              name='cpf'
-              value={form.interessado.cpf}
-              onChange={(e) => handleChange(e, 'interessado')}
-            />
-            <input
-              placeholder='E-mail'
-              name='email'
-              value={form.interessado.email}
-              onChange={(e) => handleChange(e, 'interessado')}
-            />
-            <input
-              placeholder='Telefone'
-              name='telefone'
-              value={form.interessado.telefone}
-              onChange={(e) => handleChange(e, 'interessado')}
-            />
-            <input
-              placeholder='CNH'
-              name='cnh'
-              value={form.interessado.cnh}
-              onChange={(e) => handleChange(e, 'interessado')}
-            />
-            <input
-              placeholder='Categoria'
-              name='cnhCategoria'
-              value={form.interessado.cnhCategoria}
-              onChange={(e) => handleChange(e, 'interessado')}
-            />
-            <input
-              placeholder='Validade'
-              type='date'
-              name='cnhValidade'
-              value={form.interessado.cnhValidade}
-              onChange={(e) => handleChange(e, 'interessado')}
-            />
-            <input
-              placeholder='Órgão Emissor'
-              name='cnhOrgaoEmissor'
-              value={form.interessado.cnhOrgaoEmissor}
-              onChange={(e) => handleChange(e, 'interessado')}
-            />
-            <input
-              placeholder='UF'
-              name='cnhuf'
-              value={form.interessado.cnhuf}
-              onChange={(e) => handleChange(e, 'interessado')}
-            />
+            <div className='row'>
+              <label className='input-group'>
+                Nome
+                <input
+                  {...register('interessado.nome')}
+                  readOnly={tipoSolicitacao === 'proprio'}
+                />
+                <p
+                  style={{
+                    display: errors?.interessado?.nome ? 'none' : 'flex',
+                  }}
+                >
+                  {errors?.interessado?.nome?.message}
+                </p>
+              </label>
+
+              <label className='input-group'>
+                CPF
+                <input
+                  {...register('interessado.cpf')}
+                  readOnly={tipoSolicitacao === 'proprio'}
+                />
+              </label>
+            </div>
+            <div className='row'>
+              <label className='input-group'>
+                Email
+                <input
+                  {...register('interessado.email')}
+                  readOnly={tipoSolicitacao === 'proprio'}
+                />
+              </label>
+              <label className='input-group'>
+                Telefone
+                <input {...register('interessado.telefone')} />
+              </label>
+            </div>
+            <div className='row'>
+              <label className='input-group'>
+                CNH
+                <input {...register('interessado.cnh')} />
+              </label>
+              <label className='input-group'>
+                Categoria
+                <input {...register('interessado.cnhCategoria')} />
+              </label>
+            </div>
+            <div className='row'>
+              <label className='input-group'>
+                Validade
+                <input type='date' {...register('interessado.cnhValidade')} />
+              </label>
+              <label className='input-group'>
+                Órgão Emissor
+                <input {...register('interessado.cnhOrgaoEmissor')} />
+              </label>
+              <label className='input-group'>
+                UF
+                <input {...register('interessado.cnhuf')} />
+              </label>
+            </div>
           </fieldset>
 
           <fieldset>
             <legend>Informações da Solicitação</legend>
+            <div className='row'>
+              <label className='input-group'>
+                Tipo de Veículo
+                <select {...register('tipoVeiculo')}>
+                  <option value='' disabled>
+                    Selecione
+                  </option>
+                  {tiposVeiculo.map((tipo) => (
+                    <option key={tipo} value={tipo}>
+                      {tipo}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className='input-group'>
+                Motorista Solicitado
+                <select {...register('motoristaSolicitado')}>
+                  <option value='' disabled>
+                    Selecione
+                  </option>
+                  <option value='Sim'>Sim</option>
+                  <option value='Não'>Não</option>
+                </select>
+              </label>
+            </div>
+            <div className='row'>
+              <label className='input-group'>
+                Tipo de Viagem
+                <select {...register('tipoViagem')}>
+                  <option value='' disabled>
+                    Selecione
+                  </option>
+                  {tiposViagem.map((tipo) => (
+                    <option key={tipo} value={tipo}>
+                      {tipo}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-            <select
-              name='tipoVeiculo'
-              value={form.tipoVeiculo}
-              onChange={handleChange}
-              required
-            >
-              <option value=''>Tipo de Veículo</option>
-              {tiposVeiculo.map((tipo) => (
-                <option key={tipo} value={tipo}>
-                  {tipo}
-                </option>
-              ))}
-            </select>
-            <select
-              name='motoristaSolicitado'
-              value={form.motoristaSolicitado}
-              onChange={handleChange}
-            >
-              <option>Sim</option>
-              <option>Não</option>
-            </select>
-
-            <select
-              name='tipoViagem'
-              value={form.tipoViagem}
-              onChange={handleChange}
-              required
-            >
-              <option value=''>Tipo de Viagem</option>
-              {tiposViagem.map((tipo) => (
-                <option key={tipo} value={tipo}>
-                  {tipo}
-                </option>
-              ))}
-            </select>
-
-            <select
-              name='motivoViagem'
-              value={form.motivoViagem}
-              onChange={handleChange}
-              required
-            >
-              <option value=''>Motivo da Viagem</option>
-              {motivosViagem.map((motivo) => (
-                <option key={motivo} value={motivo}>
-                  {motivo}
-                </option>
-              ))}
-            </select>
-            <input
-              type='date'
-              name='dataPartida'
-              value={form.dataPartida}
-              onChange={handleChange}
-            />
-            <input
-              type='time'
-              name='horaPartida'
-              value={form.horaPartida}
-              onChange={handleChange}
-            />
-            <input
-              type='date'
-              name='dataChegada'
-              value={form.dataChegada}
-              onChange={handleChange}
-            />
-            <input
-              type='time'
-              name='horaChegada'
-              value={form.horaChegada}
-              onChange={handleChange}
-            />
-            <textarea
-              placeholder='Observação'
-              name='observacao'
-              value={form.observacao}
-              onChange={handleChange}
-            />
+              <label className='input-group'>
+                Motivo da Viagem
+                <select {...register('motivoViagem')}>
+                  <option value='' disabled>
+                    Selecione
+                  </option>
+                  {motivosViagem.map((motivo) => (
+                    <option key={motivo} value={motivo}>
+                      {motivo}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className='row'>
+              <label className='input-group'>
+                Data e Hora de Partida
+                <input type='date' {...register('dataPartida')} />
+                <input type='time' {...register('horaPartida')} />
+              </label>
+              <label className='input-group'>
+                Data e Hora de Chegada
+                <input type='date' {...register('dataChegada')} />
+                <input type='time' {...register('horaChegada')} />
+              </label>
+            </div>
           </fieldset>
+          <div className='row textarea'>
+            <label className='input-group'>
+              Observações
+              <textarea {...register('observacao')} />
+            </label>
+          </div>
 
           <div className='formulario-botoes'>
             <button type='submit' className='primario'>
@@ -299,7 +422,7 @@ const FormularioInicial = ({ dados, onNext }) => {
             </button>
           </div>
         </form>
-      </div>
+      </FormProvider>
     </Container>
   );
 };

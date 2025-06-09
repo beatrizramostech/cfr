@@ -2,24 +2,57 @@ import React from 'react';
 import { apiService } from '../../services/api';
 import './ConfirmacaoFinal.css';
 import Container from '../Container/Container';
+import { useAlert } from '../../contexts/AlertContext';
 
 const ConfirmacaoFinal = ({ dados, pontos, onBack }) => {
+  const { showAlert } = useAlert();
+
+  const origem = pontos.find((p) => p.tipoPonto === 'Origem');
+  const destino = pontos.find((p) => p.tipoPonto === 'Destino');
+  if (!origem || !destino) {
+    showAlert({ message: 'Rota precisa ter ORIGEM E DESTINO' });
+  }
+ 
   const handleConfirmar = async () => {
     const payload = {
       ...dados,
+      localOrigem: origem?.nomeLocal,
+      municipioOrigem: origem?.municipio,
+      localDestino: destino?.nomeLocal,
+      municipioDestino: destino?.municipio,
       pontosRota: pontos.map((ponto, idx) => ({
         ...ponto,
         ordem: idx,
       })),
     };
 
+    if (
+      !dados.procurador?.nome &&
+      !dados.procurador?.cpf &&
+      !dados.procurador?.email &&
+      !dados.procurador?.telefone
+    ) {
+      delete payload.procurador;
+    }
+
+    if (!payload.interessado.cnhValidade) {
+      delete payload.interessado.cnhValidade;
+    }
+
     try {
-      await apiService.criarSolicitacao(payload);
-      alert('Solicitação enviada com sucesso!');
-      // redirecionar ou resetar o formulário
+      const data = await apiService.criarSolicitacao(payload);
+      showAlert({
+        message: 'Solicitação enviada com sucesso',
+        type: 'success',
+      });
+      console.log(data)
     } catch (error) {
-      console.error('Erro ao enviar solicitação:', error);
-      alert('Erro ao enviar solicitação.');
+      console.error(
+        'Erro ao enviar solicitação:',
+        error.response?.data,
+      );
+      showAlert({ message: 'Erro ao enviar solicitação' });
+      console.log(payload);
     }
   };
 
@@ -82,7 +115,7 @@ const ConfirmacaoFinal = ({ dados, pontos, onBack }) => {
             Sim
           </button>
         </div>
-      </div>{' '}
+      </div>
     </Container>
   );
 };
