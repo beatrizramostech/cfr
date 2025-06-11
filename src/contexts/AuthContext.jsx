@@ -127,25 +127,7 @@
 //   }, []);
 
 //   //Login Sem AC
-//   const login = async (cpf) => {
-//     try {
-//       const token = await apiService.login(cpf);
-//       localStorage.setItem('token', token);
 
-//       const decoded = jwt_decode(token);
-//       setUser(decoded);
-//       return true;
-//     } catch (err) {
-//       console.error('Erro ao fazer login:', err);
-//       return false;
-//     }
-//   };
-
-//   const logout = () => {
-//     localStorage.removeItem('token');
-//     delete api.defaults.headers.common['Authorization'];
-//     setUser(null);
-//   };
 //   return (
 //     <AuthContext.Provider
 //       value={{ isAuthenticated, loginAC, login, user, logout }}
@@ -212,44 +194,16 @@ export const AuthProvider = ({ children }) => {
     window.location.href = authUrl;
   }, [VITE_CLIENT_ID, VITE_URI_AC, scopes]);
 
-  const calcularTempoRestanteParaExpiracao = () => {
-    const rawToken = localStorage.getItem(VITE_APP_NAME_TOKEN);
-    if (!rawToken) return 0;
-    const expiracaoToken = jwt_decode(rawToken).exp * 1000;
-    return expiracaoToken - Date.now();
-  };
-
-  const renovarToken = async () => {
-    try {
-      const response = await apiService.post(`/auth/renovacao`);
-      if (response.status === 200) {
-        const newToken = response.data;
-        localStorage.setItem(VITE_APP_NAME_TOKEN, newToken);
-        setToken(newToken);
-      }
-    } catch (err) {
-      console.error('Erro ao renovar token:', err);
-      loginAC(); // força novo login
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem(VITE_APP_NAME_TOKEN);
-    delete api.defaults.headers.common['Authorization'];
-    setUser(null);
-    setIsAuthenticated(false);
-  };
-
   // ⏱ Checagem e renovação do token a cada segundo
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (token || localStorage.getItem(VITE_APP_NAME_TOKEN)) {
         const tempoRestante = calcularTempoRestanteParaExpiracao();
-        if (tempoRestante <= 60 * 1000) {
+        if (tempoRestante <= 20 * 60 * 1000) {
           renovarToken();
         }
       }
-    }, 1000);
+    }, 60000);
 
     return () => clearInterval(intervalId);
   }, [token]);
@@ -262,7 +216,7 @@ export const AuthProvider = ({ children }) => {
     if (tokenFromUrl) {
       localStorage.setItem(VITE_APP_NAME_TOKEN, tokenFromUrl);
       setToken(tokenFromUrl);
-      window.history.replaceState({}, document.title, window.location.pathname); // remove query param
+      window.history.replaceState({}, document.title, window.location.pathname);
     } else if (localToken) {
       setToken(localToken);
     }
@@ -282,8 +236,53 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
+  const renovarToken = async () => {
+    try {
+      const response = await apiService.renovacao();
+      if (response.status === 200) {
+        const newToken = response.data.token;
+        console.log(response.data.token);
+        localStorage.setItem(VITE_APP_NAME_TOKEN, newToken);
+        setToken(newToken);
+      }
+    } catch (err) {
+      console.error('Erro ao renovar token:', err);
+      // loginAC(); // força novo login
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem(VITE_APP_NAME_TOKEN);
+    delete api.defaults.headers.common['Authorization'];
+    setUser(null);
+    setIsAuthenticated(false);
+  };
+
+  const calcularTempoRestanteParaExpiracao = () => {
+    const rawToken = localStorage.getItem(VITE_APP_NAME_TOKEN);
+    if (!rawToken) return 0;
+    const expiracaoToken = jwt_decode(rawToken).exp * 1000;
+    return expiracaoToken - Date.now();
+  };
+
+  const login = async (cpf) => {
+    try {
+      const token = await apiService.login(cpf);
+      localStorage.setItem('token', token);
+
+      const decoded = jwt_decode(token);
+      setUser(decoded);
+      return true;
+    } catch (err) {
+      console.error('Erro ao fazer login:', err);
+      return false;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, loginAC, logout, user }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, loginAC, login, logout, user }}
+    >
       {children}
     </AuthContext.Provider>
   );

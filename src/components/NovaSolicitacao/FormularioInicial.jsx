@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { schemaFormulario } from './schemaFormularioInicial';
+import { schemaFormulario, validarCNH } from './schemaFormularioInicial';
 import './FormularioInicial.css';
 import Container from '../Container/Container';
 import { FaQuestionCircle } from 'react-icons/fa';
@@ -91,7 +91,7 @@ const FormularioInicial = ({ dados, onNext }) => {
           if (val && typeof val.message === 'string') {
             messages.push(val.message);
           } else if (typeof val === 'object') {
-            traverse(val); // Chamada recursiva segura
+            traverse(val); 
           }
         }
       };
@@ -152,47 +152,14 @@ const FormularioInicial = ({ dados, onNext }) => {
         );
       }
     }
-    if (data.motoristaSolicitado == 'Não') {
-      if (data.interessado.cnh == '') {
-        showAlert({
-          message:
-            'Se o solicitante não possui CNH válida, deve solicitar motorista.',
-          type: 'error',
-        });
-        throw new Error(
-          'Se o solicitante não possui CNH válida, deve solicitar motorista.',
-        );
-      }
-      if (data.interessado.cnhValidade == '') {
-        showAlert({
-          message: 'Digite a data de validade da CNH.',
-          type: 'error',
-        });
-        throw new Error('Validade da CNH Invalida');
-      } else {
-        validade = new Date(`${data.interessado.cnhValidade}T00:00:00`);
-      }
-      if (data.interessado.cnhCategoria == '') {
-        showAlert({
-          message: 'Digite a categoria da CNH.',
-          type: 'error',
-        });
-        throw new Error('Categoria da CNH Invalida');
-      }
-      if (data.interessado.cnhOrgaoEmissor == '') {
-        showAlert({
-          message: 'Digite  Orgão Emissor da CNH.',
-          type: 'error',
-        });
-        throw new Error('Orgão Emissor da CNH Invalida');
-      }
-      if (data.interessado.cnhuF == '') {
-        showAlert({
-          message: 'Digite a UF da CNH.',
-          type: 'error',
-        });
-        throw new Error('UF da CNH Invalida');
-      }
+
+    const res = validarCNH(data);
+    if (res) {
+      showAlert({
+        message: res,
+        type: 'error',
+      });
+      throw new Error(res);
     }
 
     const dadosFinal = {
@@ -204,8 +171,9 @@ const FormularioInicial = ({ dados, onNext }) => {
 
     delete dadosFinal.tipoSolicitacao;
     onNext(dadosFinal);
-    console.log(dadosFinal);
   };
+
+  
   return (
     <Container>
       <FormProvider {...form}>

@@ -6,7 +6,7 @@ export const AlertProvider = ({ children }) => {
   const [alerts, setAlerts] = useState([]);
   let alertCounter = 0;
  
-  const showAlert = (message, type = 'error') => {
+  const showAlert = ({message, type = 'error'}) => {
     const id = `alert-${Date.now()}-${alertCounter++}`;
 
     setAlerts((prev) => [...prev, { id, message, type }]);

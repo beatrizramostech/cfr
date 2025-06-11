@@ -13,21 +13,25 @@ const formatDate = (isoDate) => {
 };
 
 const getViagemMaisProxima = (viagens, agora) => {
-  return viagens.reduce((maisProxima, atual) => {
+  const futuras = viagens.filter((v) => {
+    const dataHora = new Date(
+      `${v.dataPartida.split('T')[0]}T${v.horaPartida}`,
+    );
+    return dataHora > agora;
+  });
+
+  if (futuras.length === 0) return null;
+
+  return futuras.reduce((maisProxima, atual) => {
     const dataHoraAtual = new Date(
       `${atual.dataPartida.split('T')[0]}T${atual.horaPartida}`,
     );
-    if (!maisProxima) return atual;
-
     const dataHoraMaisProxima = new Date(
       `${maisProxima.dataPartida.split('T')[0]}T${maisProxima.horaPartida}`,
     );
 
-    return Math.abs(dataHoraAtual - agora) <
-      Math.abs(dataHoraMaisProxima - agora)
-      ? atual
-      : maisProxima;
-  }, null);
+    return dataHoraAtual < dataHoraMaisProxima ? atual : maisProxima;
+  });
 };
 
 const getViagensDeHoje = (viagens, hoje) => {
@@ -82,11 +86,11 @@ const HomePage = () => {
       <SubHeader userName={user.nome} onBack={() => window.history.back()} />
       <Container>
         <div className='page'>
+          <div className='greeting-container'>
+            <h2>Olá, {user.nome}!</h2>
+          </div>
           {proximaViagem && (
             <section>
-              <div className='greeting-container'>
-                <h2>Olá, {user.nome}!</h2>
-              </div>
               <div className='trip-info'>
                 <div>
                   <strong>Próxima viagem</strong>

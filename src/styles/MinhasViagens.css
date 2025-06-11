@@ -41,10 +41,40 @@ h2 {
   border-color: #004da1;
 }
 
-.lista-viagens {
-  display: flex;
+.lista-viagens-mobile {
+  display: none;
   flex-direction: column;
   gap: 12px;
+}
+.tabela-viagens {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+
+  border-radius: 12px;
+}
+
+.tabela-viagens th,
+.tabela-viagens td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tabela-viagens th {
+  cursor: pointer;
+}
+.tabela-viagens th > div {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.tabela-viagens tr:hover {
+  background-color: #f0f0f0;
 }
 
 @media (max-width: 768px) {
@@ -53,7 +83,14 @@ h2 {
   }
   .filtros-mobile {
     display: flex;
+    flex-direction: row;
     gap: 8px;
     margin-bottom: 16px;
+  }
+  .lista-viagens-mobile {
+    display: flex;
+  }
+  .lista-viagens {
+    display: none;
   }
 }

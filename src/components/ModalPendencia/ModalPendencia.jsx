@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import './ModalPendencia.css';
 import { apiService } from '../../services/api';
+import { useAlert } from '../../contexts/AlertContext';
 
 const ModalPendencia = ({ solicitacao, onClose }) => {
   const [fotos, setFotos] = useState([]);
   const [resposta, setResposta] = useState('');
+  const { showAlert } = useAlert();
 
   const formatDate = (isoDate) => {
     const [year, month, day] = isoDate.split('T')[0].split('-');
@@ -32,14 +34,19 @@ const ModalPendencia = ({ solicitacao, onClose }) => {
   const handleSubmit = async () => {
     const formData = new FormData();
     fotos.forEach((file) => formData.append('arquivos', file));
-    formData.append('respota', resposta);
+    formData.append('resposta', resposta);
     try {
-      await apiService.enviarRespostaPendencia(formData, pendencia.id);
+      const res = await apiService.enviarRespostaPendencia(
+        formData,
+        pendencia.id,
+      );
+      showAlert({ message: res.data.message, type: 'success' });
       onClose();
     } catch (err) {
       console.error(err);
     }
   };
+
 
   return (
     <div className='modal-backdrop'>

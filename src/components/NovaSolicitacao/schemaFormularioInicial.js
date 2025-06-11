@@ -31,24 +31,22 @@ export const schemaFormulario = z.object({
 });
 
 export const validarCNH = (data) => {
-  let validade = data.interessado.cnhValidade;
   if (data.interessado.cnh == '') {
     return 'Se o solicitante não possui CNH válida, deve solicitar motorista.';
   }
   if (data.interessado.cnhValidade == '') {
-    throw new Error('Validade da CNH Invalida');
-  } else {
-    validade = new Date(`${data.interessado.cnhValidade}T00:00:00`);
+    return 'Validade da CNH Invalida'
   }
   if (data.interessado.cnhCategoria == '') {
-    throw new Error('Categoria da CNH Invalida');
+    return 'Categoria da CNH Invalida'
   }
   if (data.interessado.cnhOrgaoEmissor == '') {
-    throw new Error('Orgão Emissor da CNH Invalida');
+    return 'Orgão Emissor da CNH Invalida'
   }
   if (data.interessado.cnhuF == '') {
-    throw new Error('UF da CNH Invalida');
+    return 'UF da CNH Invalida'
   }
+  return null
 };
 export const validarTipoViagem = (data, pontosRota) => {
   const partida = new Date(`${data.dataPartida}T${data.horaPartida}:00`);

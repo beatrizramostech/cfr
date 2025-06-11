@@ -7,12 +7,16 @@ import { apiService } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import ModalChecklist from '../components/ModalChecklist/ModalChecklist';
 import '../styles/ViagemDetalhe.css';
+import ModalCancelamentoViagem from '../components/ModalCancelamentoViagem/ModalCancelamentoViagem';
+import { useAlert } from '../contexts/AlertContext';
 
 const ViagemDetalhe = () => {
   const { id } = useParams();
   const { user } = useAuth();
+  const { showAlert } = useAlert();
   const [viagem, setViagem] = useState(null);
   const [showChecklistModal, setShowChecklistModal] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchViagem = async () => {
@@ -34,32 +38,39 @@ const ViagemDetalhe = () => {
   const handleMarcarChegada = async (pontoId) => {
     try {
       await apiService.marcarChegada(pontoId);
+      showAlert({ message: 'Chegada marcada com sucesso', type: 'success' });
     } catch (error) {
       console.error('Erro ao marcar chegada:', error);
+      showAlert({ message: 'Erro ao marcar chegada' });
     }
   };
 
   const handleCancelarRota = async (pontoId) => {
     try {
       await apiService.cancelarRota(pontoId);
+      showAlert({ message: 'Rota cancelada com sucesso', type: 'success' });
     } catch (error) {
       console.error('Erro ao cancelar rota:', error);
+      showAlert({ message: 'Erro ao cancelar rota' });
     }
   };
 
   const handleIniciarViagem = async () => {
     try {
       await apiService.iniciarViagem(viagem.id);
+      showAlert({ message: 'Viagem iniciada com sucesso', type: 'success' });
     } catch (error) {
       console.error('Erro ao iniciar viagem:', error);
+      showAlert({ message: 'Erro ao iniciar viagem.' });
     }
   };
-
-  const handleCancelarViagem = async () => {
+  const handleConcluirViagem = async () => {
     try {
-      await apiService.cancelarViagem(viagem.id);
+      await apiService.concluirViagem(viagem.id);
+      showAlert({ message: 'Viagem concluida com sucesso', type: 'success' });
     } catch (error) {
-      console.error('Erro ao cancelar viagem:', error);
+      console.error('Erro ao concluir viagem:', error);
+      showAlert({ message: 'Erro ao concluir viagem' });
     }
   };
 
@@ -158,9 +169,13 @@ const ViagemDetalhe = () => {
             </div>
 
             <div className='botoes-viagem'>
-              <button className='perigo' onClick={handleCancelarViagem}>
-                Cancelar Viagem
-              </button>
+              {viagem.status != 'CANCELADA' &&
+                viagem.status != 'CONCLUÍDA' &&
+                !isMotorista && (
+                  <button className='perigo' onClick={() => setModalOpen(true)}>
+                    Cancelar Viagem
+                  </button>
+                )}
               {isMotorista && (
                 <>
                   <button
@@ -169,14 +184,27 @@ const ViagemDetalhe = () => {
                   >
                     Inserir Checklist
                   </button>
-                  <button className='primario' onClick={handleIniciarViagem}>
-                    Iniciar Viagem
-                  </button>
+                  {viagem.status != 'INICIADA' && (
+                    <button className='primario' onClick={handleIniciarViagem}>
+                      Iniciar Viagem
+                    </button>
+                  )}
+                  {viagem.status === 'INICIADA' && (
+                    <button className='primario' onClick={handleConcluirViagem}>
+                      Concluir Viagem
+                    </button>
+                  )}
                 </>
               )}
             </div>
           </div>
         </div>
+        {modalOpen && (
+          <ModalCancelamentoViagem
+            id={viagem.id}
+            onClose={() => setModalOpen(false)}
+          />
+        )}
       </Container>
     </>
   );

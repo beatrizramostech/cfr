@@ -67,8 +67,21 @@ export const apiService = {
     const res = await api.post(`/viagens/${viagemId}/inicio`);
     return res.data;
   },
-  cancelarViagem: async (viagemId) => {
-    const res = await api.post(`/viagens/${viagemId}/cancelamento`);
+
+  concluirViagem: async (viagemId) => {
+    const res = await api.post(`/viagens/${viagemId}/conclusao`);
+    return res.data;
+  },
+  cancelarViagem: async (viagemId, resposta) => {
+    const res = await api.post(
+      `/viagens/${viagemId}/cancelamento`,
+      JSON.stringify(resposta),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
     return res.data;
   },
   enviarChecklist: async (formData, viagemId) => {
