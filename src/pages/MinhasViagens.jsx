@@ -50,8 +50,8 @@ const MinhasViagens = () => {
       const data = new Date(v.dataPartida).toLocaleDateString();
 
       if (filtro === 'Dia') return data === hoje;
-      if (filtro === 'Encerradas')
-        return v.status.toLowerCase() === 'encerrada';
+      if (filtro === 'Concluídas')
+        return v.status.toLowerCase() === 'concluída';
       return true;
     })
     .sort((a, b) => {
@@ -71,7 +71,7 @@ const MinhasViagens = () => {
     const data = new Date(v.dataPartida).toLocaleDateString();
 
     if (filtro === 'Dia') return data === hoje;
-    if (filtro === 'Encerradas') return v.status.toLowerCase() === 'encerrada';
+    if (filtro === 'Concluídas') return v.status.toLowerCase() === 'concluída';
     return true;
   });
   const handleClick = (id) => {
@@ -82,7 +82,7 @@ const MinhasViagens = () => {
       <Header />
       <SubHeader onBack={() => window.history.back()} userName={user.nome} />
       <Container>
-        <div className='minhas-viagens-container'>
+        <div className='page'>
           <h2>Minhas Viagens</h2>
 
           {viagemAtual && (
@@ -109,10 +109,10 @@ const MinhasViagens = () => {
               Dia
             </button>
             <button
-              onClick={() => setFiltro('Encerradas')}
-              className={filtro === 'Encerradas' ? 'ativo' : ''}
+              onClick={() => setFiltro('Concluídas')}
+              className={filtro === 'Concluídas' ? 'ativo' : ''}
             >
-              Encerradas
+              Concluídas
             </button>
           </div>
 

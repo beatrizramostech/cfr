@@ -17,6 +17,7 @@ const MinhasSolicitacoes = () => {
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [ordenarPor, setOrdenarPor] = useState(null);
   const [ordemAscendente, setOrdemAscendente] = useState(true);
+  const [filtro, setFiltro] = useState('Todas');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -57,12 +58,18 @@ const MinhasSolicitacoes = () => {
     navigate(path.solicitacaoDetalhe(id));
   };
 
+  const solicitacoesFiltradas = solicitacoes.filter((v) => {
+    if (filtro === 'Dia') return v.status.toLowerCase() === 'em pendência';
+    if (filtro === 'Aprovadas') return v.status.toLowerCase() === 'aprovada';
+    return true;
+  });
+
   return (
     <>
       <Header />
       <SubHeader onBack={() => window.history.back()} userName={user.nome} />
       <Container>
-        <div className='minhas-viagens-container'>
+        <div className='page'>
           <h2>Minhas Solicitações</h2>
 
           {solicitacaoComPendencia && (
@@ -187,9 +194,28 @@ const MinhasSolicitacoes = () => {
               </table>
             </div>
           </section>
-
+          <div className='filtros-mobile'>
+            <button
+              onClick={() => setFiltro('Todas')}
+              className={filtro === 'Todas' ? 'ativo' : ''}
+            >
+              Todas
+            </button>
+            <button
+              onClick={() => setFiltro('Dia')}
+              className={filtro === 'Dia' ? 'ativo' : ''}
+            >
+              Em Pendência
+            </button>
+            <button
+              onClick={() => setFiltro('Aprovadas')}
+              className={filtro === 'Aprovadas' ? 'ativo' : ''}
+            >
+              Aprovadas
+            </button>
+          </div>
           <div className='lista-viagens-mobile'>
-            {solicitacoes.map((v) => (
+            {solicitacoesFiltradas.map((v) => (
               <ViagemCard
                 categoria={'solicitacao'}
                 key={v.id}

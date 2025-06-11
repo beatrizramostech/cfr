@@ -13,8 +13,8 @@
 /*--------------------*/
 
 .page {
-  margin: 24px 108px;
-  padding: 20px 30px;
+  margin: 48px 108px;
+  padding: 24px 48px;
   border-radius: 16px;
   background-color: white;
 }

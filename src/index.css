@@ -68,3 +68,11 @@ body,
 .alert-info {
   background-color: var(--azul-1);
 }
+
+.conteudo-notfound {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}

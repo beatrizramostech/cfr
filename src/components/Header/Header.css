@@ -5,11 +5,13 @@
 }
 
 .header__content {
+  height: 100%;
   margin: 0 108px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
+
   flex-wrap: wrap;
 }
 

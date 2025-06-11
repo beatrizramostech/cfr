@@ -12,7 +12,7 @@ const ConfirmacaoFinal = ({ dados, pontos, onBack }) => {
   if (!origem || !destino) {
     showAlert({ message: 'Rota precisa ter ORIGEM E DESTINO' });
   }
- 
+
   const handleConfirmar = async () => {
     const payload = {
       ...dados,
@@ -45,12 +45,9 @@ const ConfirmacaoFinal = ({ dados, pontos, onBack }) => {
         message: 'Solicitação enviada com sucesso',
         type: 'success',
       });
-      console.log(data)
+      console.log(data);
     } catch (error) {
-      console.error(
-        'Erro ao enviar solicitação:',
-        error.response?.data,
-      );
+      console.error('Erro ao enviar solicitação:', error.response?.data);
       showAlert({ message: 'Erro ao enviar solicitação' });
       console.log(payload);
     }
@@ -58,7 +55,7 @@ const ConfirmacaoFinal = ({ dados, pontos, onBack }) => {
 
   return (
     <Container>
-      <div className='confirmacao-container'>
+      <div className='page confirmacao-container'>
         <h3>Confirma os dados da solicitação?</h3>
 
         <div className='resumo-solicitacao'>
