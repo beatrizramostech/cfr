@@ -91,7 +91,7 @@ const FormularioInicial = ({ dados, onNext }) => {
           if (val && typeof val.message === 'string') {
             messages.push(val.message);
           } else if (typeof val === 'object') {
-            traverse(val); 
+            traverse(val);
           }
         }
       };
@@ -114,7 +114,7 @@ const FormularioInicial = ({ dados, onNext }) => {
     let partida = new Date(`${data.dataPartida}T${data.horaPartida}:00`);
     let chegada = new Date(`${data.dataChegada}T${data.horaChegada}:00`);
     let validade = data.interessado.cnhValidade;
-
+    console.log(data);
     if (data.dataChegada < data.dataPartida) {
       showAlert({
         message: 'Data de chegada deve ser posterior à data de partida.',
@@ -154,6 +154,7 @@ const FormularioInicial = ({ dados, onNext }) => {
     }
 
     const res = validarCNH(data);
+    console.log(res);
     if (res) {
       showAlert({
         message: res,
@@ -173,7 +174,6 @@ const FormularioInicial = ({ dados, onNext }) => {
     onNext(dadosFinal);
   };
 
-  
   return (
     <Container>
       <FormProvider {...form}>
@@ -246,28 +246,24 @@ const FormularioInicial = ({ dados, onNext }) => {
           <fieldset>
             <legend>Interessado</legend>
             <div className='row'>
-              <label className='input-group'>
-                Nome
-                <input
-                  {...register('interessado.nome')}
-                  readOnly={tipoSolicitacao === 'proprio'}
-                />
-                <p
-                  style={{
-                    display: errors?.interessado?.nome ? 'none' : 'flex',
-                  }}
-                >
-                  {errors?.interessado?.nome?.message}
-                </p>
-              </label>
-
-              <label className='input-group'>
-                CPF
-                <input
-                  {...register('interessado.cpf')}
-                  readOnly={tipoSolicitacao === 'proprio'}
-                />
-              </label>
+              <div className='column'>
+                <label className='input-group'>
+                  Nome
+                  <input
+                    {...register('interessado.nome')}
+                    readOnly={tipoSolicitacao === 'proprio'}
+                  />
+                </label>
+              </div>
+              <div className='column'>
+                <label className='input-group'>
+                  CPF
+                  <input
+                    {...register('interessado.cpf')}
+                    readOnly={tipoSolicitacao === 'proprio'}
+                  />
+                </label>
+              </div>
             </div>
             <div className='row'>
               <label className='input-group'>
@@ -283,25 +279,26 @@ const FormularioInicial = ({ dados, onNext }) => {
               </label>
             </div>
             <div className='row'>
-              <label className='input-group'>
-                CNH
-                <input {...register('interessado.cnh')} />
-              </label>
-              <label className='input-group'>
-                Categoria
-                <input {...register('interessado.cnhCategoria')} />
-              </label>
-            </div>
-            <div className='row'>
-              <label className='input-group'>
-                Validade
-                <input type='date' {...register('interessado.cnhValidade')} />
-              </label>
-              <label className='input-group'>
+              <div className='column'>
+                <label className='input-group-2'>
+                  CNH
+                  <input {...register('interessado.cnh')} />
+                </label>
+                <label className='input-group-3'>
+                  Categoria
+                  <input {...register('interessado.cnhCategoria')} />
+                </label>
+
+                <label className='input-group-2'>
+                  Validade
+                  <input type='date' {...register('interessado.cnhValidade')} />
+                </label>
+              </div>
+              <label className='input-group-2'>
                 Órgão Emissor
                 <input {...register('interessado.cnhOrgaoEmissor')} />
               </label>
-              <label className='input-group'>
+              <label className='input-group-3'>
                 UF
                 <input {...register('interessado.cnhuf')} />
               </label>

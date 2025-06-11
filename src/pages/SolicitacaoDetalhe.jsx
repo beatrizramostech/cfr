@@ -118,7 +118,7 @@ const SolicitacaoDetalhe = () => {
             </button>
           )}
         </div>
-
+        {!solicitacao.pendencia && status == 'EM PENDÊNCIA' && <p>WTF?</p>}
         {modalOpen && (
           <ModalPendencia
             solicitacao={solicitacao}

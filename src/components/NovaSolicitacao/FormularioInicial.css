@@ -14,15 +14,7 @@
   margin-bottom: 8px;
 }
 
-fieldset {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* duas colunas iguais */
-  gap: 0.25rem;
-  margin-bottom: 1rem;
-}
-
 legend {
-  grid-column: 1 / -1;
   font-weight: bold;
   margin-bottom: 8px;
 }
@@ -136,13 +128,25 @@ textarea {
   outline: 2px solid #4b7c9f;
   border-radius: 50%;
 }
+fieldset {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+}
 .row {
   display: flex;
   flex-direction: row;
   gap: 1rem;
-  flex-shrink: 0;
+  width: 100%;
+  flex-wrap: nowrap;
 }
 
+.column {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  width: 50%;
+}
 .input-group,
 .input-group-2,
 .input-group-3 {

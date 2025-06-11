@@ -58,7 +58,8 @@ export const AuthProvider = ({ children }) => {
     const intervalId = setInterval(() => {
       if (token || localStorage.getItem(VITE_APP_NAME_TOKEN)) {
         const tempoRestante = calcularTempoRestanteParaExpiracao();
-        if (tempoRestante <= 5 * 60 * 1000) {
+        if (tempoRestante <= 3 * 60 * 1000) {
+          console.log(tempoRestante, localStorage.getItem(VITE_APP_NAME_TOKEN));
           renovarToken();
         }
       }
@@ -104,7 +105,7 @@ export const AuthProvider = ({ children }) => {
         setToken(newToken);
       }
     } catch (err) {
-      console.error('Erro ao renovar token:', err);
+      console.error('Erro ao renovar token:', err.response.data);
       loginAC();
     }
   };

@@ -73,7 +73,24 @@ const ViagemDetalhe = () => {
       showAlert({ message: 'Erro ao concluir viagem' });
     }
   };
-
+  console.log(viagem);
+  const validarCancelamento = function () {
+    const { dataChegada, status } = viagem;
+    console.log(dataChegada, status);
+    const dataChegadaViagem = new Date(dataChegada);
+    const agora = new Date();
+    agora.setHours(0, 0, 0, 0);
+    dataChegadaViagem.setHours(0, 0, 0, 0);
+    if (
+      dataChegadaViagem < agora ||
+      status.toLowerCase() === 'cancelada' ||
+      status.toLowerCase() === 'iniciada'
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  };
   return (
     <>
       <Header />
@@ -169,33 +186,37 @@ const ViagemDetalhe = () => {
             </div>
 
             <div className='botoes-viagem'>
-              {viagem.status != 'CANCELADA' &&
-                viagem.status != 'CONCLUÍDA' &&
-                !isMotorista && (
-                  <button className='perigo' onClick={() => setModalOpen(true)}>
-                    Cancelar Viagem
-                  </button>
-                )}
-              {isMotorista && (
-                <>
-                  <button
-                    className='secundario'
-                    onClick={() => setShowChecklistModal(true)}
-                  >
-                    Inserir Checklist
-                  </button>
-                  {viagem.status != 'INICIADA' && (
-                    <button className='primario' onClick={handleIniciarViagem}>
-                      Iniciar Viagem
-                    </button>
-                  )}
-                  {viagem.status === 'INICIADA' && (
+              {validarCancelamento() && (
+                <button className='perigo' onClick={() => setModalOpen(true)}>
+                  Cancelar Viagem
+                </button>
+              )}
+              {isMotorista &&
+                viagem.status != 'INICIADA' &&
+                viagem.status != 'CANCELADA' && (
+                  <>
+                    {viagem.status != 'CONCLUÍDA' && (
+                      <>
+                        <button
+                          className='secundario'
+                          onClick={() => setShowChecklistModal(true)}
+                        >
+                          Inserir Checklist
+                        </button>
+                        <button
+                          className='primario'
+                          onClick={handleIniciarViagem}
+                        >
+                          Iniciar Viagem
+                        </button>
+                      </>
+                    )}
+
                     <button className='primario' onClick={handleConcluirViagem}>
                       Concluir Viagem
                     </button>
-                  )}
-                </>
-              )}
+                  </>
+                )}
             </div>
           </div>
         </div>

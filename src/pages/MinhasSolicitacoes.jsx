@@ -96,9 +96,9 @@ const MinhasSolicitacoes = () => {
                         OnBase ID
                         {ordenarPor === 'id' ? (
                           ordemAscendente ? (
-                            <IoMdArrowDropdownCircle size={24} />
-                          ) : (
                             <IoMdArrowDropupCircle size={24} />
+                          ) : (
+                            <IoMdArrowDropdownCircle size={24} />
                           )
                         ) : (
                           <IoMdArrowDropdownCircle size={24} />
