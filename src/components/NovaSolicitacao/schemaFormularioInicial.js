@@ -12,8 +12,12 @@ export const schemaFormulario = z.object({
     nome: z.string().min(1, 'Nome obrigatório'),
     cpf: z.string().min(11, 'CPF inválido'),
     email: z.string().email('Email inválido'),
-    telefone: z.string().min(8, 'Telefone obrigatório'),
-    cnh: z.string().optional(),
+    telefone: z
+  .string()
+  .min(1, 'Telefone obrigatório')
+  .max(11, 'Telefone inválido')
+  .regex(/^\d+$/, 'Telefone deve conter apenas números'),
+    cnh: z.string().max(9, 'CNH inválida').optional(),
     cnhCategoria: z.string().optional(),
     cnhOrgaoEmissor: z.string().optional(),
     cnhuf: z.string().optional(),
@@ -31,7 +35,10 @@ export const schemaFormulario = z.object({
 });
 
 export const validarCNH = (data) => {
-  if (data.motoristaSolicitado == 'Não') {
+    const temCampoVazio = Object.values(data.interessado).some(
+    valor => valor === "" || valor === null || valor === undefined
+  );
+  if (data.motoristaSolicitado == 'Não' && temCampoVazio) {
     if (data.interessado.cnh == '') {
       return 'Se o solicitante não possui CNH válida, deve solicitar motorista.';
     }
@@ -44,7 +51,7 @@ export const validarCNH = (data) => {
     if (data.interessado.cnhOrgaoEmissor == '') {
       return 'Orgão Emissor da CNH Invalida';
     }
-    if (data.interessado.cnhuF == '') {
+    if (data.interessado.cnhuf == '') {
       return 'UF da CNH Invalida';
     }
   }

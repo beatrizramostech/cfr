@@ -6,11 +6,7 @@ import Header from '../components/Header/Header';
 import SubHeader from '../components/SubHeader/SubHeader';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/api';
-
-const formatDate = (isoDate) => {
-  const [year, month, day] = isoDate.split('T')[0].split('-');
-  return `${day}-${month}-${year}`;
-};
+import { formatDate } from '../utils/formatDate.js';
 
 const getViagemMaisProxima = (viagens, agora) => {
   const futuras = viagens.filter((v) => {

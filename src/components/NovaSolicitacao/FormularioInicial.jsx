@@ -5,12 +5,23 @@ import { schemaFormulario, validarCNH } from './schemaFormularioInicial';
 import './FormularioInicial.css';
 import Container from '../Container/Container';
 import { FaQuestionCircle } from 'react-icons/fa';
-import { useAuth } from '../../contexts/AuthContext';
 import { motivosViagem, tiposVeiculo, tiposViagem } from './selectInfo';
 import { useAlert } from '../../contexts/AlertContext';
+import useWindowWidth from './resizeWidth';
+import { useAuth } from '../../contexts/AuthContext';
 
+const formatDate = (isoDate) => {
+    const [year, month, day] = isoDate.split('T')[0].split('-');
+    return `${year}-${month}-${day}`;
+  };
+const toIsoDate = (date) => {
+  if (!date) return '';
+  const [year, month, day] = date.split('-');
+  const res= new Date(Date.UTC(year, month - 1, day));
+  return res.toISOString();
+};  
 const FormularioInicial = ({ dados, onNext }) => {
-  const { user } = useAuth();
+  const {usuario} = useAuth()
   const { showAlert } = useAlert();
 
   const form = useForm({
@@ -35,7 +46,7 @@ const FormularioInicial = ({ dados, onNext }) => {
         cnhValidade: '',
       },
       tipoVeiculo: '',
-      motoristaSolicitado: 'Não',
+      motoristaSolicitado: '',
       tipoViagem: '',
       motivoViagem: '',
       dataPartida: '',
@@ -57,26 +68,41 @@ const FormularioInicial = ({ dados, onNext }) => {
   const tipoSolicitacao = watch('tipoSolicitacao');
 
   useEffect(() => {
-    if (!user?.nome || !user?.cpf || !user?.email) return;
+    if (!usuario) return;
 
-    if (tipoSolicitacao === 'proprio') {
-      form.setValue('interessado.nome', user.nome);
-      form.setValue('interessado.cpf', user.cpf);
-      form.setValue('interessado.email', user.email);
-      form.setValue('procurador.nome', '');
-      form.setValue('procurador.cpf', '');
-      form.setValue('procurador.email', '');
+    if (tipoSolicitacao === 'proprio' && usuario) {
+      form.setValue('interessado.nome', usuario.nome);
+      form.setValue('interessado.cpf', usuario.cpf);
+      form.setValue('interessado.email', usuario.email);
+      form.setValue('interessado.telefone', usuario.telefone || '');
+      form.setValue('interessado.cnh', usuario.cnh || '');
+      form.setValue('interessado.cnhCategoria', usuario.cnhCategoria || '');
+      form.setValue('interessado.cnhOrgaoEmissor', usuario.cnhOrgaoEmissor || ''); 
+      form.setValue('interessado.cnhuf', usuario.cnhuf || '');
+      form.setValue('interessado.cnhValidade', formatDate(usuario.cnhValidade) || '');
+      form.resetField('procurador.nome');
+      form.resetField('procurador.cpf');
+      form.resetField('procurador.email');
+      form.resetField('procurador.telefone');
     } else if (tipoSolicitacao === 'terceiro') {
-      form.setValue('interessado.nome', '');
-      form.setValue('interessado.cpf', '');
-      form.setValue('interessado.email', '');
-      form.setValue('procurador.nome', user.nome);
-      form.setValue('procurador.cpf', user.cpf);
-      form.setValue('procurador.email', user.email);
+      form.resetField('interessado.nome');
+      form.resetField('interessado.cpf');
+      form.resetField('interessado.email');
+      form.resetField('interessado.telefone');
+      form.resetField('interessado.cnh');
+      form.resetField('interessado.cnhCategoria');
+      form.resetField('interessado.cnhOrgaoEmissor');
+      form.resetField('interessado.cnhuf');
+      form.resetField('interessado.cnhValidade');
+      form.setValue('procurador.telefone', usuario.telefone || '');
+      form.setValue('procurador.nome', usuario.nome);
+      form.setValue('procurador.cpf', usuario.cpf);
+      form.setValue('procurador.email', usuario.email);
     }
-  }, [tipoSolicitacao, user, form]);
+  }, [tipoSolicitacao, form]);
 
   const onError = (errors) => {
+    console.error('Form errors:', errors);
     const extractMessages = (errorObj) => {
       const messages = [];
 
@@ -101,7 +127,7 @@ const FormularioInicial = ({ dados, onNext }) => {
     };
 
     const mensagens = extractMessages(errors);
-
+    console.error('Mensagens de erro:', mensagens);
     mensagens.forEach((msg) =>
       showAlert({
         type: 'error',
@@ -114,7 +140,7 @@ const FormularioInicial = ({ dados, onNext }) => {
     let partida = new Date(`${data.dataPartida}T${data.horaPartida}:00`);
     let chegada = new Date(`${data.dataChegada}T${data.horaChegada}:00`);
     let validade = data.interessado.cnhValidade;
-    console.log(data);
+
     if (data.dataChegada < data.dataPartida) {
       showAlert({
         message: 'Data de chegada deve ser posterior à data de partida.',
@@ -152,9 +178,9 @@ const FormularioInicial = ({ dados, onNext }) => {
         );
       }
     }
-
+    console.log(data.interessado.cnh)
     const res = validarCNH(data);
-    console.log(res);
+    
     if (res) {
       showAlert({
         message: res,
@@ -162,18 +188,26 @@ const FormularioInicial = ({ dados, onNext }) => {
       });
       throw new Error(res);
     }
-
     const dadosFinal = {
-      ...data,
-      dataPartida: partida.toISOString(),
-      dataChegada: chegada.toISOString(),
-      cnhValidade: validade,
-    };
+  ...data,
+  dataPartida: partida.toISOString(),
+  dataChegada: chegada.toISOString(),
+  interessado: {
+    ...data.interessado,
+    cnhValidade: toIsoDate(validade),
+  }
+};
+
 
     delete dadosFinal.tipoSolicitacao;
+    console.log(dadosFinal)
     onNext(dadosFinal);
   };
 
+  const width = useWindowWidth();
+  const input2 = width > 768 ? 'input-group-2' : 'input-group';
+  const input3 = width > 768 ? 'input-group-3' : 'input-group';
+  const input4 = width > 768 ? 'input-group-4' : 'input-group';
   return (
     <Container>
       <FormProvider {...form}>
@@ -213,15 +247,15 @@ const FormularioInicial = ({ dados, onNext }) => {
               <legend>Procurador</legend>
               <div className='row'>
                 <label className='input-group'>
-                  Nome
-                  <input
+                    Nome *   
+                  <input className='disabled-input'
                     {...register('procurador.nome')}
                     readOnly={tipoSolicitacao === 'terceiro'}
                   />
                 </label>
                 <label className='input-group'>
-                  CPF
-                  <input
+                  CPF *
+                  <input className='disabled-input'
                     {...register('procurador.cpf')}
                     readOnly={tipoSolicitacao === 'terceiro'}
                   />
@@ -229,15 +263,16 @@ const FormularioInicial = ({ dados, onNext }) => {
               </div>
               <div className='row'>
                 <label className='input-group'>
-                  Email
-                  <input
+                  Email *
+                  <input className='disabled-input'
                     {...register('procurador.email')}
                     readOnly={tipoSolicitacao === 'terceiro'}
+                
                   />
                 </label>
                 <label className='input-group'>
-                  Telefone
-                  <input {...register('procurador.telefone')} />
+                  Telefone *
+                  <input className='disabled-input' {...register('procurador.telefone')} />
                 </label>
               </div>
             </fieldset>
@@ -246,70 +281,88 @@ const FormularioInicial = ({ dados, onNext }) => {
           <fieldset>
             <legend>Interessado</legend>
             <div className='row'>
-              <div className='column'>
                 <label className='input-group'>
-                  Nome
-                  <input
+                   <div className={tipoSolicitacao === 'terceiro' ? 'tooltip-container' : ''}>
+                  Nome *
+                  <input  className={tipoSolicitacao=== 'proprio' ? 'disabled-input' : ''}
                     {...register('interessado.nome')}
                     readOnly={tipoSolicitacao === 'proprio'}
-                  />
-                </label>
+                  />  <span className='tooltip-text'>
+                  Campo obrigatório
+                </span>
               </div>
-              <div className='column'>
+                </label>
+            
                 <label className='input-group'>
-                  CPF
-                  <input
-                    {...register('interessado.cpf')}
-                    readOnly={tipoSolicitacao === 'proprio'}
-                  />
+                  <div className={tipoSolicitacao === 'terceiro' ? 'tooltip-container' : ''}>
+                      CPF *
+                      <input  className={tipoSolicitacao=== 'proprio' ? 'disabled-input' : ''}
+                        {...register('interessado.cpf')}
+                        readOnly={tipoSolicitacao === 'proprio'}
+                      />  <span className='tooltip-text'>
+                      Campo obrigatório
+                    </span>
+                  </div>
                 </label>
               </div>
-            </div>
             <div className='row'>
               <label className='input-group'>
-                Email
-                <input
+                <div className={tipoSolicitacao === 'terceiro' ? 'tooltip-container' : ''}>
+
+                Email *
+                      <input  className={tipoSolicitacao=== 'proprio' ? 'disabled-input' : ''}
                   {...register('interessado.email')}
                   readOnly={tipoSolicitacao === 'proprio'}
-                />
+                       />  <span className='tooltip-text'>
+                      Campo obrigatório
+                    </span>
+                  </div>
               </label>
               <label className='input-group'>
-                Telefone
-                <input {...register('interessado.telefone')} />
-              </label>
+                  <div className={tipoSolicitacao === 'terceiro' ? 'tooltip-container' : ''}>
+                     Telefone *
+                    <input  className={tipoSolicitacao=== 'proprio' ? 'disabled-input' : ''}
+                     {...register('interessado.telefone')} readOnly={tipoSolicitacao === 'proprio'}/>
+                    <span className='tooltip-text'>
+                      Campo obrigatório
+                    </span>
+                  </div>   
+            </label>
             </div>
-            <div className='row'>
-              <div className='column'>
-                <label className='input-group-2'>
+            <div className='row-cnh'>
+          <div className="column">
+                <label className={input2}>
                   CNH
                   <input {...register('interessado.cnh')} />
                 </label>
-                <label className='input-group-3'>
+                <label className={input3}>
                   Categoria
                   <input {...register('interessado.cnhCategoria')} />
                 </label>
-
-                <label className='input-group-2'>
+                <label className={input2}>
                   Validade
                   <input type='date' {...register('interessado.cnhValidade')} />
                 </label>
               </div>
-              <label className='input-group-2'>
+              <div className="column-cnh">
+              <label className={input4}>
                 Órgão Emissor
                 <input {...register('interessado.cnhOrgaoEmissor')} />
               </label>
-              <label className='input-group-3'>
+              <label className={input3}>
                 UF
                 <input {...register('interessado.cnhuf')} />
               </label>
-            </div>
+              </div></div>
+         
           </fieldset>
 
           <fieldset>
             <legend>Informações da Solicitação</legend>
             <div className='row'>
+              <div className="column">
               <label className='input-group'>
-                Tipo de Veículo
+                Tipo de Veículo *
                 <select {...register('tipoVeiculo')}>
                   <option value='' disabled>
                     Selecione
@@ -322,7 +375,7 @@ const FormularioInicial = ({ dados, onNext }) => {
                 </select>
               </label>
               <label className='input-group'>
-                Motorista Solicitado
+                Motorista Solicitado *
                 <select {...register('motoristaSolicitado')}>
                   <option value='' disabled>
                     Selecione
@@ -330,11 +383,10 @@ const FormularioInicial = ({ dados, onNext }) => {
                   <option value='Sim'>Sim</option>
                   <option value='Não'>Não</option>
                 </select>
-              </label>
-            </div>
-            <div className='row'>
-              <label className='input-group'>
-                Tipo de Viagem
+              </label></div>
+            
+              <label className={input2}>
+                Tipo de Viagem *
                 <select {...register('tipoViagem')}>
                   <option value='' disabled>
                     Selecione
@@ -348,7 +400,7 @@ const FormularioInicial = ({ dados, onNext }) => {
               </label>
 
               <label className='input-group'>
-                Motivo da Viagem
+                Motivo da Viagem *
                 <select {...register('motivoViagem')}>
                   <option value='' disabled>
                     Selecione
@@ -361,25 +413,28 @@ const FormularioInicial = ({ dados, onNext }) => {
                 </select>
               </label>
             </div>
-            <div className='row'>
+            <div className='row column'>
               <label className='input-group'>
-                Data e Hora de Partida
+                Data e Hora de Partida *
                 <input type='date' {...register('dataPartida')} />
                 <input type='time' {...register('horaPartida')} />
               </label>
               <label className='input-group'>
-                Data e Hora de Chegada
+                Data e Hora de Chegada *
                 <input type='date' {...register('dataChegada')} />
                 <input type='time' {...register('horaChegada')} />
               </label>
             </div>
           </fieldset>
+          <fieldset>
+                  <legend> Observações</legend>
           <div className='row textarea'>
             <label className='input-group'>
-              Observações
+             
               <textarea {...register('observacao')} />
             </label>
           </div>
+          </fieldset>
 
           <div className='formulario-botoes'>
             <button type='submit' className='primario'>

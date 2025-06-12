@@ -2,16 +2,13 @@ import React, { useState } from 'react';
 import './ModalPendencia.css';
 import { apiService } from '../../services/api';
 import { useAlert } from '../../contexts/AlertContext';
+import { formatDate } from '../../utils/formatDate.js';
 
 const ModalPendencia = ({ solicitacao, onClose }) => {
   const [fotos, setFotos] = useState([]);
   const [resposta, setResposta] = useState('');
   const { showAlert } = useAlert();
 
-  const formatDate = (isoDate) => {
-    const [year, month, day] = isoDate.split('T')[0].split('-');
-    return `${day}-${month}-${year}`;
-  };
 
   const formatarHoraMinuto = (dataIso, usarUtc = false) => {
     const data = new Date(dataIso);
@@ -97,6 +94,7 @@ const ModalPendencia = ({ solicitacao, onClose }) => {
             multiple
             onChange={handleUpload}
             style={{ display: 'none' }}
+             accept="image/*"
           />
 
           <label htmlFor='upload-arquivos' className='upload-botao '>

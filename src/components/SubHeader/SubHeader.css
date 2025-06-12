@@ -7,7 +7,10 @@
   padding: 0 108px;
   border-bottom: 1px solid #ccc;
 }
-
+.subheader-first{
+  display: flex;
+  align-items: center;
+}
 .subheader__back {
   background: none;
   border: none;

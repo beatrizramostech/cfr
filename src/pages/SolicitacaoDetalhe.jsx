@@ -7,6 +7,8 @@ import ModalPendencia from '../components/ModalPendencia/ModalPendencia';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/SolicitacaoDetalhe.css';
 import Container from '../components/Container/Container';
+import { formatDate } from '../utils/formatDate.js';
+
 
 const SolicitacaoDetalhe = () => {
   const { id } = useParams();
@@ -27,10 +29,7 @@ const SolicitacaoDetalhe = () => {
     fetchSolicitacao();
   }, [id]);
 
-  const formatDate = (isoDate) => {
-    const [year, month, day] = isoDate.split('T')[0].split('-');
-    return `${day}-${month}-${year}`;
-  };
+
 
   if (!solicitacao) return <p>Carregando...</p>;
   const {
@@ -64,6 +63,15 @@ const SolicitacaoDetalhe = () => {
               <p>{status}</p>
             </div>
             <div>
+              <strong>Interessado</strong>
+              <p>{solicitacao.interessado.nome}</p>
+            </div>
+            {solicitacao.procurador!={} && 
+            <div> 
+              <strong>Procurador</strong>
+              <p>{solicitacao.procurador.nome}</p>
+            </div>}
+            <div>
               <strong>Horário de Saída</strong>
               <p>{horaPartida}</p>
             </div>
@@ -81,7 +89,7 @@ const SolicitacaoDetalhe = () => {
             </div>
             <div>
               <strong>Motorista Solicitado?</strong>
-              <p>{motoristaSolicitado ? 'Sim' : 'Não'}</p>
+              <p>{motoristaSolicitado }</p>
             </div>
             <div>
               <strong>Tipo de Veículo</strong>

@@ -60,7 +60,18 @@ const FormularioRota = ({
           uf: unidadeSelecionada.uf,
         });
       } else {
-        setPontoAtual({ ...pontoAtual, unidadeId: value });
+         setPontoAtual({
+          ...pontoAtual,
+          unidadeId: value,
+          nomeLocal:value,
+          cep: value,
+          logradouro: value,
+          numero: value,
+          complemento: value,
+          bairro: value,
+          municipio: value,
+          uf: value,
+        });
       }
     } else {
       setPontoAtual({ ...pontoAtual, [name]: value });
@@ -113,6 +124,7 @@ const FormularioRota = ({
             value={pontoAtual.unidadeId}
             onChange={handleChange}
             required
+            disabled={!pontoAtual.tipoPonto} 
           >
             <option value=''>Selecione a Unidade</option>
             {unidades.map((u) => (

@@ -15,6 +15,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [token, setToken] = useState(null);
+    const [usuario, setUsuario] = useState();
+
 
   const { VITE_CLIENT_ID, VITE_URI_AC, VITE_APP_NAME_TOKEN } = import.meta.env;
 
@@ -59,9 +61,9 @@ export const AuthProvider = ({ children }) => {
       if (token || localStorage.getItem(VITE_APP_NAME_TOKEN)) {
         const tempoRestante = calcularTempoRestanteParaExpiracao();
         if (tempoRestante <= 3 * 60 * 1000) {
-          console.log(tempoRestante, localStorage.getItem(VITE_APP_NAME_TOKEN));
           renovarToken();
         }
+        
       }
     }, 60000);
 
@@ -89,6 +91,14 @@ export const AuthProvider = ({ children }) => {
         setUser(decoded);
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         setIsAuthenticated(true);
+        try{
+          const res = apiService.getUsuario();
+           res.then((data) => {
+            setUsuario(data);
+          });
+        } catch (error) {
+          console.error('Erro ao buscar usuário:', error);
+        }
       } catch (err) {
         console.error('Token inválido:', err);
         logout();
@@ -124,10 +134,12 @@ export const AuthProvider = ({ children }) => {
     return expiracaoToken - Date.now();
   };
 
+
+
   const login = async (cpf) => {
     try {
       const token = await apiService.login(cpf);
-      localStorage.setItem('token', token);
+      localStorage.setItem(VITE_APP_NAME_TOKEN, token);
 
       const decoded = jwt_decode(token);
       setUser(decoded);
@@ -140,7 +152,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, loginAC, login, logout, user }}
+      value={{ isAuthenticated, loginAC, login, logout, usuario, user }}
     >
       {children}
     </AuthContext.Provider>

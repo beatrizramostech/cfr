@@ -48,7 +48,7 @@ const ModalChecklist = ({ viagem, user, onClose }) => {
     formData.append('tipo', viagem.tipoVeiculo?.id);
 
     formData.append('avarias', JSON.stringify(avarias));
-
+    console.log(formData)
     try {
       await apiService.enviarChecklist(formData, viagem.id);
       onClose();

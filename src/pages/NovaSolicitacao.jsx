@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header/Header';
 import SubHeader from '../components/SubHeader/SubHeader';
 import Container from '../components/Container/Container';
@@ -9,10 +9,11 @@ import '../styles/NovaSolicitacao.css';
 import { useAuth } from '../contexts/AuthContext';
 
 const NovaSolicitacao = () => {
-  const { user } = useAuth();
+  const { usuario } = useAuth();
   const [step, setStep] = useState(1);
   const [dadosSolicitacao, setDadosSolicitacao] = useState({});
   const [pontosRota, setPontosRota] = useState([]);
+  
 
   const handleAvancar = (dados) => {
     setDadosSolicitacao({ ...dadosSolicitacao, ...dados });
@@ -27,13 +28,15 @@ const NovaSolicitacao = () => {
     }
   };
 
+  console.log(usuario)
+
   return (
     <>
       <Header />
-      <SubHeader userName={user.nome} onBack={handleVoltar} />
+      <SubHeader userName={usuario.nome} onBack={handleVoltar} />
       <Container>
         {step === 1 && (
-          <FormularioInicial dados={dadosSolicitacao} onNext={handleAvancar} />
+          <FormularioInicial dados={dadosSolicitacao}  onNext={handleAvancar} />
         )}
         {step === 2 && (
           <FormularioRota

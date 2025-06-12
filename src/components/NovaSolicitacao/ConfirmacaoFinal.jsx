@@ -3,17 +3,22 @@ import { apiService } from '../../services/api';
 import './ConfirmacaoFinal.css';
 import Container from '../Container/Container';
 import { useAlert } from '../../contexts/AlertContext';
+import { useNavigate } from 'react-router-dom';
+import { path } from '../../utils/pathBuilder';
 
 const ConfirmacaoFinal = ({ dados, pontos, onBack }) => {
   const { showAlert } = useAlert();
+  const navigate = useNavigate();
 
   const origem = pontos.find((p) => p.tipoPonto === 'Origem');
   const destino = pontos.find((p) => p.tipoPonto === 'Destino');
-  if (!origem || !destino) {
-    showAlert({ message: 'Rota precisa ter ORIGEM E DESTINO' });
-  }
+ 
 
   const handleConfirmar = async () => {
+     if (!origem || !destino) {
+    showAlert({ message: 'Rota precisa ter ORIGEM E DESTINO' });
+    return;
+  }
     const payload = {
       ...dados,
       localOrigem: origem?.nomeLocal,
@@ -40,22 +45,27 @@ const ConfirmacaoFinal = ({ dados, pontos, onBack }) => {
     }
 
     try {
+      console.log('try', payload)
+      alert(payload)
       const data = await apiService.criarSolicitacao(payload);
-      showAlert({
-        message: 'Solicitação enviada com sucesso',
-        type: 'success',
-      });
-      console.log(data);
+      if(data.status === 200) {
+        showAlert({
+          message: 'Solicitação enviada com sucesso',
+          type: 'success',
+        });
+        console.log(data);
+        navigate(path.minhasSolicitacoes);
+    }
     } catch (error) {
-      console.error('Erro ao enviar solicitação:', error.response?.data);
+      console.error('Erro ao enviar solicitação:', error);
       showAlert({ message: 'Erro ao enviar solicitação' });
-      console.log(payload);
     }
   };
 
   return (
     <Container>
-      <div className='page confirmacao-container'>
+      <div className=' confirmacao-solict-container 
+ page'>
         <h3>Confirma os dados da solicitação?</h3>
 
         <div className='resumo-solicitacao'>

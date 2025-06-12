@@ -76,15 +76,13 @@ const ViagemDetalhe = () => {
   console.log(viagem);
   const validarCancelamento = function () {
     const { dataChegada, status } = viagem;
-    console.log(dataChegada, status);
     const dataChegadaViagem = new Date(dataChegada);
     const agora = new Date();
     agora.setHours(0, 0, 0, 0);
     dataChegadaViagem.setHours(0, 0, 0, 0);
     if (
       dataChegadaViagem < agora ||
-      status.toLowerCase() === 'cancelada' ||
-      status.toLowerCase() === 'iniciada'
+      status.toLowerCase() != 'confirmada'
     ) {
       return false;
     } else {
@@ -117,7 +115,7 @@ const ViagemDetalhe = () => {
               </div>
               <div>
                 <strong>Motorista</strong>
-                <p>{viagem.motorista?.nome}</p>
+                <p>{viagem.motorista != null ? viagem.motorista.nome : viagem.colaborador.nome}</p>
               </div>
               <div>
                 <strong>Data de Saída</strong>
@@ -165,7 +163,7 @@ const ViagemDetalhe = () => {
                       {ponto.nomeLocal} - {ponto.municipio}/{ponto.uf}
                     </p>
                   </div>
-                  {isMotorista && (
+                  {isMotorista && viagem.status.toLowerCase() != 'cancelada' && (
                     <div className='ponto-rota-actions'>
                       <button
                         className='secundario'
@@ -192,26 +190,24 @@ const ViagemDetalhe = () => {
                 </button>
               )}
               {isMotorista &&
-                viagem.status != 'INICIADA' &&
-                viagem.status != 'CANCELADA' && (
+                viagem.status.toLowerCase() == 'confirmada' && (
                   <>
-                    {viagem.status != 'CONCLUÍDA' && (
-                      <>
-                        <button
-                          className='secundario'
-                          onClick={() => setShowChecklistModal(true)}
-                        >
-                          Inserir Checklist
-                        </button>
-                        <button
-                          className='primario'
-                          onClick={handleIniciarViagem}
-                        >
-                          Iniciar Viagem
-                        </button>
-                      </>
-                    )}
-
+                    <button
+                      className='secundario'
+                      onClick={() => setShowChecklistModal(true)}
+                    >
+                      Inserir Checklist
+                    </button>
+                    <button
+                      className='primario'
+                      onClick={handleIniciarViagem}
+                    >
+                      Iniciar Viagem
+                    </button>
+                  </>
+                )}
+                {isMotorista && viagem.status.toLowerCase() == 'iniciada' && (
+                  <>
                     <button className='primario' onClick={handleConcluirViagem}>
                       Concluir Viagem
                     </button>

@@ -29,6 +29,10 @@ export const apiService = {
     });
     return res;
   },
+  getUsuario: async () => {
+    const res = await api.get('/usuarios');
+    return res.data;
+  },
   getViagens: async () => {
     const res = await api.get('/viagens/buscar', {
       params: {
