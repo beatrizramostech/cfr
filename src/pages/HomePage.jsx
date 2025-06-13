@@ -7,11 +7,12 @@ import SubHeader from '../components/SubHeader/SubHeader';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/api';
 import { formatDate } from '../utils/formatDate.js';
+import useWindowWidth from '../components/NovaSolicitacao/resizeWidth.js';
 
 const getViagemMaisProxima = (viagens, agora) => {
   const futuras = viagens.filter((v) => {
     const dataHora = new Date(
-      `${v.dataPartida.split('T')[0]}T${v.horaPartida}`,
+      `${v.dataPartida.split('T')[0]}T${v.horaPartida}`
     );
     return dataHora > agora;
   });
@@ -20,10 +21,10 @@ const getViagemMaisProxima = (viagens, agora) => {
 
   return futuras.reduce((maisProxima, atual) => {
     const dataHoraAtual = new Date(
-      `${atual.dataPartida.split('T')[0]}T${atual.horaPartida}`,
+      `${atual.dataPartida.split('T')[0]}T${atual.horaPartida}`
     );
     const dataHoraMaisProxima = new Date(
-      `${maisProxima.dataPartida.split('T')[0]}T${maisProxima.horaPartida}`,
+      `${maisProxima.dataPartida.split('T')[0]}T${maisProxima.horaPartida}`
     );
 
     return dataHoraAtual < dataHoraMaisProxima ? atual : maisProxima;
@@ -42,6 +43,7 @@ const HomePage = () => {
   const [proximaViagem, setProximaViagem] = useState(null);
   const [alertViagem, setAlertViagem] = useState(false);
   const [alertSolicitacao, setAlertSolicitacao] = useState(false);
+  const windowWidth = useWindowWidth();
 
   useEffect(() => {
     const fetchDados = async () => {
@@ -57,7 +59,7 @@ const HomePage = () => {
         const solicitacoesData = solicitacaoResp.dados || [];
 
         const confirmadas = viagensData.filter(
-          (v) => v.status === 'CONFIRMADA',
+          (v) => v.status === 'CONFIRMADA'
         );
         const iniciadas = viagensData.some((v) => v.status === 'INICIADA');
         const pendentes = solicitacoesData.some((s) => s.status === 'PENDENTE');
@@ -81,13 +83,13 @@ const HomePage = () => {
       <Header />
       <SubHeader userName={user.nome} onBack={() => window.history.back()} />
       <Container>
-        <div className='page'>
-          <div className='greeting-container'>
+        <div className="page">
+          <div className="greeting-container">
             <h2>Olá, {user.nome}!</h2>
           </div>
           {proximaViagem && (
             <section>
-              <div className='trip-info'>
+              <div className="trip-info">
                 <div>
                   <strong>Próxima viagem</strong>
                   <br />
@@ -110,8 +112,9 @@ const HomePage = () => {
 
           <section>
             <Card
-              title='Minhas Viagens'
-              type='viagem'
+              windowWidth={windowWidth}
+              title="Minhas Viagens"
+              type="viagem"
               status={alertViagem ? 'iniciada' : null}
             >
               <li>Visualizar detalhes da viagem</li>
@@ -124,8 +127,9 @@ const HomePage = () => {
             {user.colaborador && (
               <>
                 <Card
-                  title='Minhas Solicitações'
-                  type='solicitações'
+                  windowWidth={windowWidth}
+                  title="Minhas Solicitações"
+                  type="solicitações"
                   status={alertSolicitacao ? 'pendente' : null}
                 >
                   <li>Visualizar todas as solicitações</li>
@@ -133,7 +137,7 @@ const HomePage = () => {
                   <li>Responder pendências</li>
                 </Card>
 
-                <Card title='Solicitar Viagem' type='novasolicitação' />
+                <Card title="Solicitar Viagem" type="novasolicitação" />
               </>
             )}
           </section>

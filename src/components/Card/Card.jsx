@@ -4,20 +4,20 @@ import { PiWarningCircleFill } from 'react-icons/pi';
 import { PiCarProfile, PiFilesLight, PiFilePlus } from 'react-icons/pi';
 import { useNavigate } from 'react-router-dom';
 import { path } from '../../utils/pathBuilder';
+import useWindowWidth from '../NovaSolicitacao/resizeWidth';
 
-const Card = ({ title, children, type, status }) => {
+const Card = ({ title, children, type, status, windowWidth }) => {
   const navigate = useNavigate();
-
   const handleClick = () => {
     switch (type) {
       case 'viagem':
-        navigate(path.minhasViagens)
+        navigate(path.minhasViagens);
         break;
       case 'solicitações':
-        navigate(path.minhasSolicitacoes)
+        navigate(path.minhasSolicitacoes);
         break;
       default:
-        navigate(path.novaSolicitacao)
+        navigate(path.novaSolicitacao);
     }
   };
 
@@ -38,15 +38,15 @@ const Card = ({ title, children, type, status }) => {
 
   return (
     <div className={`card ${type}`} onClick={handleClick}>
-      <div className='card__icon'>{getIcon()}</div>
-      <div className='card__content'>
-        <h3 className='card__title'>{title}</h3>
-        <ul className='card__list'>{children}</ul>
+      <div className="card__icon">{getIcon()}</div>
+      <div className="card__content">
+        <h3 className="card__title">{title}</h3>
+        <ul className="card__list">{children}</ul>
       </div>
       {showAlerta && (
-        <div className='card__alert'>
+        <div className="card__alert">
           <PiWarningCircleFill size={20} />
-          <span>{getAlertText()}</span>
+          {windowWidth > 768 && <span>{getAlertText()}</span>}
         </div>
       )}
     </div>

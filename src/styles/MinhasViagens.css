@@ -77,7 +77,19 @@ h2 {
   background-color: #f0f0f0;
 }
 
-@media (max-width: 768px) {
+.paginacao {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.paginacao span {
+  font-weight: bold;
+}
+
+@media (max-width: 1024px) {
   .minhas-viagens-container {
     margin: 24px 32px;
   }

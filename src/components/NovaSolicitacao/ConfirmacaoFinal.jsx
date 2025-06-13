@@ -12,13 +12,12 @@ const ConfirmacaoFinal = ({ dados, pontos, onBack }) => {
 
   const origem = pontos.find((p) => p.tipoPonto === 'Origem');
   const destino = pontos.find((p) => p.tipoPonto === 'Destino');
- 
 
   const handleConfirmar = async () => {
-     if (!origem || !destino) {
-    showAlert({ message: 'Rota precisa ter ORIGEM E DESTINO' });
-    return;
-  }
+    if (!origem || !destino) {
+      showAlert({ message: 'Rota precisa ter ORIGEM E DESTINO' });
+      return;
+    }
     const payload = {
       ...dados,
       localOrigem: origem?.nomeLocal,
@@ -27,7 +26,7 @@ const ConfirmacaoFinal = ({ dados, pontos, onBack }) => {
       municipioDestino: destino?.municipio,
       pontosRota: pontos.map((ponto, idx) => ({
         ...ponto,
-        ordem: idx,
+        ordem: idx + 1,
       })),
     };
 
@@ -45,17 +44,14 @@ const ConfirmacaoFinal = ({ dados, pontos, onBack }) => {
     }
 
     try {
-      console.log('try', payload)
-      alert(payload)
       const data = await apiService.criarSolicitacao(payload);
-      if(data.status === 200) {
+      if (data.status === 200) {
         showAlert({
           message: 'Solicitação enviada com sucesso',
           type: 'success',
         });
-        console.log(data);
         navigate(path.minhasSolicitacoes);
-    }
+      }
     } catch (error) {
       console.error('Erro ao enviar solicitação:', error);
       showAlert({ message: 'Erro ao enviar solicitação' });
@@ -64,11 +60,13 @@ const ConfirmacaoFinal = ({ dados, pontos, onBack }) => {
 
   return (
     <Container>
-      <div className=' confirmacao-solict-container 
- page'>
+      <div
+        className=" confirmacao-solict-container 
+ page"
+      >
         <h3>Confirma os dados da solicitação?</h3>
 
-        <div className='resumo-solicitacao'>
+        <div className="resumo-solicitacao">
           <p>
             <strong>Interessado:</strong> {dados.interessado?.nome} —{' '}
             <strong>CPF:</strong> {dados.interessado?.cpf}
@@ -99,26 +97,26 @@ const ConfirmacaoFinal = ({ dados, pontos, onBack }) => {
           </p>
         </div>
 
-        <div className='resumo-rota'>
+        <div className="resumo-rota">
           <h4>Rota</h4>
-          <div className='rota-linha'>
+          <div className="rota-linha">
             {pontos.map((ponto, idx) => (
               <React.Fragment key={idx}>
-                <div className='ponto-rota'>
-                  <div className='ponto-bolinha' />
+                <div className="ponto-rota">
+                  <div className="ponto-bolinha" />
                   <span>{ponto.nomeLocal}</span>
                 </div>
-                {idx < pontos.length - 1 && <div className='ponto-seta'>→</div>}
+                {idx < pontos.length - 1 && <div className="ponto-seta">→</div>}
               </React.Fragment>
             ))}
           </div>
         </div>
 
-        <div className='confirmacao-botoes'>
-          <button className='perigo' onClick={onBack}>
+        <div className="confirmacao-botoes">
+          <button className="perigo" onClick={onBack}>
             Não
           </button>
-          <button className='primario' onClick={handleConfirmar}>
+          <button className="primario" onClick={handleConfirmar}>
             Sim
           </button>
         </div>

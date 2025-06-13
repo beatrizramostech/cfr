@@ -60,10 +60,10 @@ const FormularioRota = ({
           uf: unidadeSelecionada.uf,
         });
       } else {
-         setPontoAtual({
+        setPontoAtual({
           ...pontoAtual,
           unidadeId: value,
-          nomeLocal:value,
+          nomeLocal: value,
           cep: value,
           logradouro: value,
           numero: value,
@@ -97,36 +97,43 @@ const FormularioRota = ({
     }
     setStep(3);
   };
-
   return (
     <Container>
-      <div className='formulario-rota page'>
+      <div className="formulario-rota page">
         <h3>Rota</h3>
 
         <fieldset>
           <legend>Ponto da Rota</legend>
           <select
-            name='tipoPonto'
+            name="tipoPonto"
             value={pontoAtual.tipoPonto}
             onChange={handleChange}
             required
           >
-            <option value='' disabled>
+            <option value="" disabled>
               Selecione o tipo de ponto
             </option>
-            <option value='Origem'>Origem</option>
-            <option value='Intermediario'>Intermediário</option>
-            <option value='Destino'>Destino</option>
+           
+            {pontos.length < 1 && <option value="Origem">Origem</option>}
+            {pontos.length > 0 &&
+              pontos.every((ponto) => ponto.tipoPonto !== 'Destino') && (
+                <option value="Intermediario">Intermediário</option>
+              )}
+
+            {pontos.length > 0 &&
+              pontos.every((p) => p.tipoPonto !== 'Destino') && (
+                <option value="Destino">Destino</option>
+              )}
           </select>
 
           <select
-            name='unidadeId'
+            name="unidadeId"
             value={pontoAtual.unidadeId}
             onChange={handleChange}
             required
-            disabled={!pontoAtual.tipoPonto} 
+            disabled={!pontoAtual.tipoPonto}
           >
-            <option value=''>Selecione a Unidade</option>
+            <option value="">Selecione a Unidade</option>
             {unidades.map((u) => (
               <option key={u.id} value={u.id}>
                 {u.nome}
@@ -135,77 +142,77 @@ const FormularioRota = ({
           </select>
 
           <input
-            name='nomeLocal'
-            placeholder='Nome do Local'
+            name="nomeLocal"
+            placeholder="Nome do Local"
             value={pontoAtual.nomeLocal}
             onChange={handleChange}
           />
           <input
-            name='cep'
-            placeholder='CEP'
+            name="cep"
+            placeholder="CEP"
             value={pontoAtual.cep}
             onChange={handleChange}
           />
           <input
-            name='logradouro'
-            placeholder='Logradouro'
+            name="logradouro"
+            placeholder="Logradouro"
             value={pontoAtual.logradouro}
             onChange={handleChange}
           />
           <input
-            name='numero'
-            placeholder='Número'
+            name="numero"
+            placeholder="Número"
             value={pontoAtual.numero}
             onChange={handleChange}
           />
           <input
-            name='complemento'
-            placeholder='Complemento'
+            name="complemento"
+            placeholder="Complemento"
             value={pontoAtual.complemento}
             onChange={handleChange}
           />
           <input
-            name='bairro'
-            placeholder='Bairro'
+            name="bairro"
+            placeholder="Bairro"
             value={pontoAtual.bairro}
             onChange={handleChange}
           />
           <input
-            name='municipio'
-            placeholder='Município'
+            name="municipio"
+            placeholder="Município"
             value={pontoAtual.municipio}
             onChange={handleChange}
           />
           <input
-            name='uf'
-            placeholder='UF'
+            name="uf"
+            placeholder="UF"
             value={pontoAtual.uf}
             onChange={handleChange}
           />
         </fieldset>
 
-        <div className='formulario-botoes'>
-          <button type='button' className='verde' onClick={adicionarPonto}>
+        <div className="formulario-botoes">
+          <button type="button" className="verde" onClick={adicionarPonto}>
             + Adicionar Ponto
           </button>
         </div>
 
         {pontos.map((p, index) => (
-          <div key={index} className='ponto-listado'>
-            <div className='ponto-cabecalho'>
+          <div key={index} className="ponto-listado">
+            <div className="ponto-cabecalho">
               <strong>{p.tipoPonto}</strong> — {p.nomeLocal}
-              <button className='perigo' onClick={() => removerPonto(index)}>
+              <button className="perigo" onClick={() => removerPonto(index)}>
                 Remover
               </button>
             </div>
           </div>
         ))}
 
-        <div className='formulario-botoes'>
-          <button className='perigo' onClick={onBack}>
+        <div className="formulario-botoes">
+          <button className="perigo" onClick={onBack}>
             Voltar
           </button>
-          <button className='primario' onClick={onNext}>
+          <button className="primario" onClick={onNext}>
             Finalizar
           </button>
         </div>

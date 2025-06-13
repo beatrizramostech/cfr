@@ -33,26 +33,20 @@ export const apiService = {
     const res = await api.get('/usuarios');
     return res.data;
   },
-  getViagens: async () => {
-    const res = await api.get('/viagens/buscar', {
-      params: {
-        pagina: 1,
-        quantidade: 50,
-      },
-    });
+  getViagens: async (pagina = 1, quantidade = 20) => {
+    const res = await api.get(
+      `/viagens/buscar?pagina=${pagina}&quantidade=${quantidade}`
+    );
     return res.data;
   },
   getViagensPorId: async (id) => {
     const res = await api.get(`/viagens/${id}`);
     return res.data;
   },
-  getSolicitacoes: async () => {
-    const res = await api.get('/solicitacoes/buscar', {
-      params: {
-        pagina: 1,
-        quantidade: 50,
-      },
-    });
+  getSolicitacoes: async (pagina = 1, quantidade = 20) => {
+    const res = await api.get(
+      `/solicitacoes/buscar?pagina=${pagina}&quantidade=${quantidade}`
+    );
     return res.data;
   },
   getSolicitacaoPorId: async (id) => {
@@ -60,11 +54,19 @@ export const apiService = {
     return res.data;
   },
   marcarChegada: async (pontoId) => {
-    const res = await api.post(`/pontosRota/${pontoId}/conclusao`);
+    const res = await api.post(`/pontosrota/${pontoId}/conclusao`);
     return res.data;
   },
-  cancelarRota: async (pontoId) => {
-    const res = await api.post(`/pontosRota/${pontoId}/cancelamento`);
+  cancelarRota: async (pontoId, resposta) => {
+    const res = await api.post(
+      `/pontosrota/${pontoId}/cancelamento`,
+      JSON.stringify(resposta),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
     return res.data;
   },
   iniciarViagem: async (viagemId) => {
@@ -84,7 +86,7 @@ export const apiService = {
         headers: {
           'Content-Type': 'application/json',
         },
-      },
+      }
     );
     return res.data;
   },
@@ -93,7 +95,11 @@ export const apiService = {
     return res;
   },
   enviarRespostaPendencia: async (formData, pendenciaId) => {
-    const res = await api.post(`/pendencias/${pendenciaId}`, formData);
+    const res = await api.post(`/pendencias/${pendenciaId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return res;
   },
   criarSolicitacao: async (dados) => {

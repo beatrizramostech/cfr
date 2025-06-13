@@ -17,6 +17,7 @@
   padding: 24px 48px;
   border-radius: 16px;
   background-color: white;
+  min-height: 100vh;
 }
 
 .content {
@@ -26,6 +27,7 @@
 @media (max-width: 768px) {
   .page {
     margin: 24px 12px;
+    padding: 16px;
   }
   .trip-info {
     flex-direction: column;

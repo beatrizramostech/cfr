@@ -178,7 +178,6 @@ const FormularioInicial = ({ dados, onNext }) => {
         );
       }
     }
-    console.log(data.interessado.cnh)
     const res = validarCNH(data);
     
     if (res) {
@@ -200,7 +199,6 @@ const FormularioInicial = ({ dados, onNext }) => {
 
 
     delete dadosFinal.tipoSolicitacao;
-    console.log(dadosFinal)
     onNext(dadosFinal);
   };
 

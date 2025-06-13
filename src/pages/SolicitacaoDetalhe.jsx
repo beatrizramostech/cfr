@@ -9,7 +9,6 @@ import '../styles/SolicitacaoDetalhe.css';
 import Container from '../components/Container/Container';
 import { formatDate } from '../utils/formatDate.js';
 
-
 const SolicitacaoDetalhe = () => {
   const { id } = useParams();
   const { user } = useAuth();
@@ -29,8 +28,6 @@ const SolicitacaoDetalhe = () => {
     fetchSolicitacao();
   }, [id]);
 
-
-
   if (!solicitacao) return <p>Carregando...</p>;
   const {
     status,
@@ -44,7 +41,7 @@ const SolicitacaoDetalhe = () => {
     motivoViagem,
     pontosRota = {},
   } = solicitacao;
-
+  console.log('Solicitação Detalhe:', solicitacao);
   return (
     <>
       <Header />
@@ -53,24 +50,22 @@ const SolicitacaoDetalhe = () => {
         onBack={() => window.history.back()}
       />
       <Container>
-        <div className='page'>
-          <div className='detalhes-container'>
+        <div className="page">
+          <div className="detalhes-container">
             <h2>Solicitação #{solicitacao.onBaseID}</h2>
           </div>
-          <div className='detalhes-grid'>
+          <div className="detalhes-grid">
             <div>
               <strong>Status</strong>
               <p>{status}</p>
             </div>
-            <div>
-              <strong>Interessado</strong>
-              <p>{solicitacao.interessado.nome}</p>
-            </div>
-            {solicitacao.procurador!={} && 
-            <div> 
-              <strong>Procurador</strong>
-              <p>{solicitacao.procurador.nome}</p>
-            </div>}
+
+            {solicitacao.procurador && (
+              <div>
+                <strong>Procurador</strong>
+                <p>{solicitacao.procurador?.nome}</p>
+              </div>
+            )}
             <div>
               <strong>Horário de Saída</strong>
               <p>{horaPartida}</p>
@@ -89,7 +84,7 @@ const SolicitacaoDetalhe = () => {
             </div>
             <div>
               <strong>Motorista Solicitado?</strong>
-              <p>{motoristaSolicitado }</p>
+              <p>{motoristaSolicitado}</p>
             </div>
             <div>
               <strong>Tipo de Veículo</strong>
@@ -99,17 +94,17 @@ const SolicitacaoDetalhe = () => {
               <strong>Tipo de Viagem</strong>
               <p>{tipoViagem.nome}</p>
             </div>
-            <div className='grid-full'>
+            <div className="grid-full">
               <strong>Motivo da Viagem</strong>
               <p>{motivoViagem.nome}</p>
             </div>
           </div>
-          <div className='rota-box'>
+          <div className="rota-box">
             <h4>Rota</h4>
             {pontosRota != [] &&
               pontosRota.map((ponto) => (
-                <div key={ponto.id} className='ponto-rota'>
-                  <div className='ponto-rota-info'>
+                <div key={ponto.id} className="ponto-rota">
+                  <div className="ponto-rota-info">
                     <p>
                       <strong>{ponto.tipoPonto}</strong>
                     </p>
@@ -121,7 +116,7 @@ const SolicitacaoDetalhe = () => {
               ))}
           </div>
           {solicitacao.pendencia && (
-            <button className='primario' onClick={() => setModalOpen(true)}>
+            <button className="primario" onClick={() => setModalOpen(true)}>
               Responder Pendência
             </button>
           )}

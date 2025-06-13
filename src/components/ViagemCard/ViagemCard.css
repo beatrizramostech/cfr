@@ -74,18 +74,15 @@
   border: 1px solid #f5c2c7;
 }
 
-/* Ícone de sair */
 .export-icon {
   color: #555;
 }
 
-/* Layout desktop tipo tabela */
 .viagem-tabela {
   display: none;
 }
 
-/* ======= RESPONSIVO ======= */
-@media (min-width: 769px) {
+@media (min-width: 1024px) {
   .viagem-content {
     display: none;
   }
