@@ -14,12 +14,8 @@ h2 {
 }
 
 .aviso {
-  border: 1px solid #f5c400;
-  background-color: #fff9e5;
-  padding: 12px;
-  margin-bottom: 16px;
-  font-size: 14px;
-  color: #7a5800;
+  color: black;
+  font-weight: bold;
 }
 
 .filtros-mobile {

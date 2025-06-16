@@ -8,9 +8,13 @@ export default defineConfig({
   server: {
     https: true,
     historyApiFallback: true,
+
+    fs: {
+      strict: false,
+    },
   },
+  base: '/homo/cfr/',
   plugins: [react(), viteBasicSslPlugin()],
-  base: '/cfr',
   build: {
     outDir: 'cfr',
   },

@@ -1,3 +1,5 @@
+const { VITE_NAME_APP } = import.meta.env;
+
 export const path = {
   login: `/`,
   home: `/home`,
