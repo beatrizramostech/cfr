@@ -12,7 +12,7 @@ const ModalCancelamentoViagem = ({ onClose, pontoID, viagemId, opcao }) => {
 
   const handleCancelarViagem = async () => {
     try {
-      const res = await apiService.cancelarViagem(viagemId, resposta);
+      await apiService.cancelarViagem(viagemId, resposta);
       showAlert({ message: res.message, type: 'success' });
       onClose();
       navigate(path.detalhesViagem(viagemId));
@@ -24,7 +24,7 @@ const ModalCancelamentoViagem = ({ onClose, pontoID, viagemId, opcao }) => {
 
   const handleCancelarRota = async () => {
     try {
-      const res = await apiService.cancelarRota(pontoID, resposta);
+      await apiService.cancelarRota(pontoID, resposta);
       showAlert({ message: res.message, type: 'success' });
       navigate(path.detalhesViagem(viagemId));
       onClose();

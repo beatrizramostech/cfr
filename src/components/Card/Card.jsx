@@ -32,7 +32,7 @@ const Card = ({ title, children, type, status, windowWidth }) => {
 
   const getAlertText = () => {
     if (status === 'iniciada') return 'Viagem Iniciada';
-    if (status === 'pendente') return 'Pendência ativa';
+    if (status === 'em em pendência') return 'Pendência ativa';
     return '';
   };
 
